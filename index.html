@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <title>English Sounds</title>
@@ -18,17 +19,20 @@
             --neon-glow: #a98bb3;
             --glass-effect: rgba(255, 255, 255, 1.15);
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
+
         body {
             margin: 0;
             padding: 0;
             background: transparent;
             overflow: hidden;
         }
+
         .container {
             z-index: 10;
             top: 50%;
@@ -49,6 +53,7 @@
             position: absolute;
             padding-bottom: 10px;
         }
+
         .carousel-wrapper {
             position: relative;
             width: auto;
@@ -57,6 +62,7 @@
             overflow: hidden;
             margin-left: 10px;
         }
+
         h1,
         h2 {
             text-align: center;
@@ -66,11 +72,13 @@
             margin-bottom: 16px;
             font-size: 1.5rem;
         }
+
         .sound {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+
         .transcription-button {
             font-family: 'Charis SIL';
             position: relative;
@@ -88,6 +96,7 @@
             box-shadow: 0 0 10px rgba(219, 62, 219, 0.623), inset 0 0 10px rgba(216, 14, 189, 0.616);
             margin-top: 20px;
         }
+
         .transcription-symbol {
             font-family: 'Charis SIL';
             font-size: 30px;
@@ -95,6 +104,7 @@
             padding: 20px;
             color: var(--primary-color);
         }
+
         .tooltip {
             z-index: 10;
             background: #1a1a1a;
@@ -116,18 +126,21 @@
             visibility: hidden;
             pointer-events: none;
         }
+
         .transcription-button:hover .tooltip,
         .transcription-button:focus .tooltip {
             opacity: 1;
             visibility: visible;
             transition-delay: 0.3s;
         }
+
         .examples-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-top: 50px;
         }
+
         .example-section {
             display: flex;
             flex-direction: column;
@@ -135,6 +148,7 @@
             position: relative;
             width: 100%;
         }
+
         .example-button {
             width: 100%;
             max-width: 400px;
@@ -148,30 +162,36 @@
             cursor: pointer;
             position: relative;
         }
+
         .word {
             font-size: 45px;
             font-weight: bold;
             color: var(--secondary-color);
         }
+
         .highlighted {
             color: var(--primary-color);
             text-shadow: 0 0 5px var(--primary-color), 0 0 2px var(--primary-color);
         }
+
         .transcription {
             font-size: 30px;
             color: var(--third-color);
         }
+
         .translation {
             font-size: 20px;
             color: #cccccc;
             font-style: italic;
         }
+
         .nav-buttons {
             display: flex;
             justify-content: space-between;
             gap: 150px;
             width: 100%;
         }
+
         .nav-buttons button {
             flex: 1;
             background: transparent;
@@ -181,16 +201,19 @@
             cursor: pointer;
             transition: var(--transition);
         }
+
         .nav-buttons button:hover {
             transform: scale(1.05) rotate(0deg);
             background: var(--secondary-gradient);
             color: #f8f4f4;
         }
+
         .slides-container {
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
         }
+
         .slide {
             display: grid;
             grid-template-columns: repeat(6, minmax(40px, 1fr));
@@ -200,6 +223,7 @@
             min-width: 100%;
             padding: 10px 0;
         }
+
         .nav-item {
             padding: 5px;
             background: linear-gradient(145deg, #111111, #1e1e1e);
@@ -210,6 +234,7 @@
             font-size: 24px;
             transition: var(--transition);
         }
+
         .nav-item:hover,
         .nav-item.active {
             background: var(--secondary-gradient);
@@ -217,11 +242,13 @@
             transform: scale(1.05);
             font-weight: 900;
         }
+
         .carousel-controls {
             display: flex;
             justify-content: space-between;
             width: 100%;
         }
+
         .control-btn {
             font-size: 20px !important;
             color: var(--primary-color);
@@ -235,39 +262,49 @@
             box-shadow: 0 0 10px rgba(142, 45, 226, 0.3);
             border-radius: 10px;
         }
+
         .control-btn:hover {
             background: var(--primary-gradient);
             color: white;
             transform: scale(1.1);
         }
+
         @media (max-width: 480px) {
             .transcription-button {
                 height: 80px;
                 font-size: 20px;
                 margin-bottom: 10px;
             }
+
             .transcription-symbol {
                 font-size: 40px;
             }
+
             .word {
                 font-size: 1.5em;
             }
+
             .transcription {
                 font-size: 1.1em;
             }
+
             .translation {
                 font-size: 0.9em;
             }
+
             .nav-buttons button {
                 font-size: 1rem;
             }
+
             .slide {
                 gap: 6px;
             }
+
             .nav-item {
                 font-size: 16px;
             }
         }
+
         .carousel-wrapper {
             position: relative;
             width: auto;
@@ -276,6 +313,7 @@
             overflow: hidden;
             margin-left: 10px;
         }
+
         .carousel-controls {
             position: absolute;
             top: 0;
@@ -286,6 +324,7 @@
             z-index: 10;
             pointer-events: none;
         }
+
         .carousel-btn {
             background: transparent;
             color: var(--primary-color);
@@ -296,11 +335,13 @@
             font-size: 25px;
             transition: all 0.3s ease;
         }
+
         .carousel-btn:hover {
             background: var(--primary-gradient);
             color: #fdfcfc;
             transform: scale(1.1);
         }
+
         .empty-cell,
         .control-btn {
             background-color: #1a1a1a !important;
@@ -310,10 +351,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="sound">
-            <button class="transcription-button" onclick="playSound(sounds[currentIndex].soundFile)" id="transcriptionButton"></button>
+            <button class="transcription-button" onclick="playSound(sounds[currentIndex].soundFile)"
+                id="transcriptionButton"></button>
         </div>
         <div class="examples-container">
             <div class="example-section">
@@ -1162,37 +1205,53 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
- function initSwipeHandlers() {
-    let touchStartY = 0;
-    let isSwipingDown = false;
+        function initSwipeHandlers() {
+            let touchStartY = 0;
+            let isSwipingDown = false;
 
-    document.addEventListener('touchstart', (event) => {
-        // Берём первый доступный touch
-        touchStartY = event.touches[0].clientY;
-        isSwipingDown = true;
-    });
+            document.addEventListener('touchstart', (event) => {
+                // Берём первый доступный touch
+                touchStartY = event.touches[0].clientY;
+                isSwipingDown = true;
+            });
 
-    document.addEventListener('touchmove', (event) => {
-        const deltaY = event.touches[0].clientY - touchStartY;
+            document.addEventListener('touchmove', (event) => {
+                const deltaY = event.touches[0].clientY - touchStartY;
 
-        // Если движение больше чем на 30px вниз — это потенциальный свайп для перезагрузки
-        if (deltaY > 30) {
-            isSwipingDown = true;
-        } else {
-            isSwipingDown = false;
+                // Если движение больше чем на 30px вниз — это потенциальный свайп для перезагрузки
+                if (deltaY > 30) {
+                    isSwipingDown = true;
+                } else {
+                    isSwipingDown = false;
+                }
+            });
+
+            document.addEventListener('touchend', (event) => {
+                const touchEndY = event.changedTouches[0].clientY;
+                const deltaY = touchEndY - touchStartY;
+
+                // Если свайп вниз длиннее 100px — перезагружаем страницу
+                if (isSwipingDown && deltaY > 100) {
+                    window.location.reload();
+                }
+            });
+
+             carouselWrapper.addEventListener('touchend', (event) => {
+                touchEndX = event.changedTouches[0].clientX;
+                const deltaX = touchEndX - touchStartX;
+                
+                // Для свайпа влево/вправо
+                if (!isSwipingDown) {
+                    const swipeThreshold = 50;
+                    if (deltaX > swipeThreshold) {
+                        prevSlide(); // Свайп вправо
+                    } else if (deltaX < -swipeThreshold) {
+                        nextSlide(); // Свайп влево
+                    }
+                }
+             
+            });
         }
-    });
-
-    document.addEventListener('touchend', (event) => {
-        const touchEndY = event.changedTouches[0].clientY;
-        const deltaY = touchEndY - touchStartY;
-
-        // Если свайп вниз длиннее 100px — перезагружаем страницу
-        if (isSwipingDown && deltaY > 100) {
-            window.location.reload();
-        }
-    });
-}
 
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
@@ -1224,13 +1283,13 @@
             const rect = event.target.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const width = rect.width;
-            
+
             if (x < width / 2) {
                 prevExample(); // Левая половина — назад
             } else {
                 nextExample(); // Правая половина — вперед
             }
-            
+
             // Озвучиваем текущее слово
             speakCurrentWord();
         }
@@ -1260,12 +1319,13 @@
             speechSynthesis.speak(utterance);
         }
 
-       window.onload = () => {
-    updateContent();
-    createFullNavigation();
-    bindNavButtons();
-    initSwipeHandlers(); // <-- ВАЖНО! Здесь мы её вызываем
-};
+        window.onload = () => {
+            updateContent();
+            createFullNavigation();
+            bindNavButtons();
+            initSwipeHandlers(); // <-- ВАЖНО! Здесь мы её вызываем
+        };
     </script>
 </body>
+
 </html>
