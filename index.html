@@ -389,9 +389,10 @@
 
         .empty-cell,
         .control-btn {
+            font-size: 1.4rem !important;
             background-color: #1a1a1a !important;
             /* Основной цвет ячеек */
-            color: #ffffff;
+            color: #d3d2d6;
             /* Цвет текста, если нужно */
             visibility: visible;
             /* Убираем скрытие */
@@ -1198,7 +1199,7 @@
 
                     if (currentSlideIndex === 0) {
                         // Слайд 1: ❯ на 24-й ячейке
-                        controlBtn.textContent = "❯";
+                        controlBtn.textContent = "→";
                         controlBtn.onclick = () => {
                             currentSlide = currentSlideIndex + 1;
                             updateSlidePosition();
@@ -1209,7 +1210,7 @@
                         // Последний слайд: ❮ на 23-й ячейке
                         const controlBtn23 = document.createElement("div");
                         controlBtn23.className = "nav-item control-btn";
-                        controlBtn23.textContent = "❮";
+                        controlBtn23.textContent = "←";
                         controlBtn23.onclick = () => {
                             currentSlide = currentSlideIndex - 1;
                             updateSlidePosition();
