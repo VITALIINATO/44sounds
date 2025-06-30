@@ -1156,69 +1156,77 @@
             updateActiveNav();
         }
 
-      function createFullNavigation() {
-    const navContainer = document.getElementById("fullNav");
-    navContainer.innerHTML = "";
+        function createFullNavigation() {
+            const navContainer = document.getElementById("fullNav");
+            navContainer.innerHTML = "";
 
-    const chunkSize = 22;
-    const totalSlides = Math.ceil(sounds.length / chunkSize);
+            const chunkSize = 22;
+            const totalSlides = Math.ceil(sounds.length / chunkSize);
 
-    for (let i = 0; i < sounds.length; i += chunkSize) {
-        const chunk = sounds.slice(i, i + chunkSize);
-        const slide = document.createElement("div");
-        slide.classList.add("slide");
+            for (let i = 0; i < sounds.length; i += chunkSize) {
+                const chunk = sounds.slice(i, i + chunkSize);
+                const slide = document.createElement("div");
+                slide.classList.add("slide");
 
-        // Добавляем звуки (22 штуки)
-        chunk.forEach((_, indexInChunk) => {
-            const globalIndex = i + indexInChunk;
-            const button = document.createElement("div");
-            button.className = "nav-item";
-            button.textContent = sounds[globalIndex].transcriptionButton;
-            button.onclick = () => {
-                currentIndex = globalIndex;
-                currentExampleIndex = 0;
-                updateContent();
-                updateActiveNav();
-            };
-            slide.appendChild(button);
-        });
+                // Добавляем звуки (22 штуки)
+                chunk.forEach((_, indexInChunk) => {
+                    const globalIndex = i + indexInChunk;
+                    const button = document.createElement("div");
+                    button.className = "nav-item";
+                    button.textContent = sounds[globalIndex].transcriptionButton;
+                    button.onclick = () => {
+                        currentIndex = globalIndex;
+                        currentExampleIndex = 0;
+                        updateContent();
+                        updateActiveNav();
+                    };
+                    slide.appendChild(button);
+                });
 
-        const currentSlideIndex = i / chunkSize;
+                const currentSlideIndex = i / chunkSize;
 
-        // Добавляем 23-ю ячейку (пустая, но с цветом)
-        const cell23 = document.createElement("div");
-        cell23.className = "nav-item empty-cell";
-        slide.appendChild(cell23);
+                // Добавляем пустые ячейки и кнопки в зависимости от слайда
+                if (chunk.length === 22) {
+                    // Добавляем пустую 23-ю ячейку
+                    const emptyCell23 = document.createElement("div");
+                    emptyCell23.className = "nav-item empty-cell";
+                    slide.appendChild(emptyCell23);
 
-        // Добавляем 24-ю ячейку (кнопка ❮ или ❯)
-        const cell24 = document.createElement("div");
-        cell24.className = "nav-item control-btn";
+                    // Добавляем кнопку на 24-ю ячейку
+                    const controlBtn = document.createElement("div");
+                    controlBtn.className = "nav-item control-btn";
 
-        if (currentSlideIndex === 0 && totalSlides > 1) {
-            cell24.textContent = "❯"; // Только ❯ на первом слайде
-            cell24.onclick = () => {
-                currentSlide = currentSlideIndex + 1;
-                updateSlidePosition();
-                updateActiveNav();
-            };
-        } else if (currentSlideIndex === totalSlides - 1) {
-            cell24.textContent = "❮"; // Только ❮ на последнем слайде
-            cell24.onclick = () => {
-                currentSlide = currentSlideIndex - 1;
-                updateSlidePosition();
-                updateActiveNav();
-            };
-        } else {
-            cell24.textContent = ""; // Пустая кнопка (или ❮/❯ по необходимости)
+                    if (currentSlideIndex === 0) {
+                        // Слайд 1: ❯ на 24-й ячейке
+                        controlBtn.textContent = "❯";
+                        controlBtn.onclick = () => {
+                            currentSlide = currentSlideIndex + 1;
+                            updateSlidePosition();
+                            updateActiveNav();
+                        };
+                        slide.appendChild(controlBtn);
+                    } else if (currentSlideIndex === totalSlides - 1) {
+                        // Последний слайд: ❮ на 23-й ячейке
+                        const controlBtn23 = document.createElement("div");
+                        controlBtn23.className = "nav-item control-btn";
+                        controlBtn23.textContent = "❮";
+                        controlBtn23.onclick = () => {
+                            currentSlide = currentSlideIndex - 1;
+                            updateSlidePosition();
+                            updateActiveNav();
+                        };
+                        // Вставляем кнопку ❮ на 23-ю ячейку (после 22 звуков)
+                        slide.insertBefore(controlBtn23, emptyCell23);
+                    }
+                }
+
+                navContainer.appendChild(slide);
+            }
+
+            updateSlidePosition();
+            updateActiveNav();
         }
 
-        slide.appendChild(cell24);
-        navContainer.appendChild(slide);
-    }
-
-    updateSlidePosition();
-    updateActiveNav();
-}
 
 
         function updateActiveNav() {
