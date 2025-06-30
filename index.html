@@ -1169,28 +1169,42 @@
             updateActiveNav();
         }
 
-        function updateActiveNav() {
-            const allSlides = document.querySelectorAll(".slide");
-            allSlides.forEach((slide, slideIndex) => {
-                const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
-                    el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
-                );
-                items.forEach((item, idx) => {
-                    const globalIndex = slideIndex * 22 + idx;
-                    item.classList.toggle("active", globalIndex === currentIndex);
-                });
+       function updateActiveNav() {
+    const allSlides = document.querySelectorAll(".slide");
+    allSlides.forEach((slide, slideIndex) => {
+        // Проверяем, виден ли текущий слайд
+        const slideRect = slide.getBoundingClientRect();
+        const containerRect = document.querySelector('.carousel-wrapper').getBoundingClientRect();
+        const isSlideVisible = slideRect.left >= containerRect.left && slideRect.right <= containerRect.right;
+        
+        if (isSlideVisible) {
+            const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
+                el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
+            );
+            items.forEach((item, idx) => {
+                const globalIndex = slideIndex * 22 + idx;
+                item.classList.toggle("active", globalIndex === currentIndex);
             });
         }
+    });
+}
 
+function updateSlidePosition() {
+    const slidesContainer = document.querySelector(".slides-container");
+    const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
+    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
 
-        function updateSlidePosition() {
-            const slidesContainer = document.querySelector(".slides-container");
-            const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
-            slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-
-            // Убираем active-класс у кнопок ← и →
-            removeControlButtonActive();
-        }
+    // Убираем active-класс у всех элементов навигации
+    const allNavItems = document.querySelectorAll('.nav-item');
+    allNavItems.forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Обновляем активный элемент после анимации перехода
+    setTimeout(() => {
+        updateActiveNav();
+    }, 500); // Задержка должна соответствовать длительности анимации (0.5s в CSS)
+}
         // Эта функция уже существует, оставляем как есть
         function removeControlButtonActive() {
             const allSlides = document.querySelectorAll(".slide");
@@ -1227,59 +1241,59 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-    function initSwipeHandlers() {
-    const carouselElement = document.querySelector('.carousel-wrapper'); // Только внутри карусели
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
+        function initSwipeHandlers() {
+            const carouselElement = document.querySelector('.carousel-wrapper'); // Только внутри карусели
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let touchEndX = 0;
+            let touchEndY = 0;
 
-    // Для горизонтального свайпа — только внутри карусели
-    if (carouselElement) {
-        carouselElement.addEventListener('touchstart', (event) => {
-            const touch = event.touches[0];
-            touchStartX = touch.clientX;
-            touchStartY = touch.clientY;
-        });
+            // Для горизонтального свайпа — только внутри карусели
+            if (carouselElement) {
+                carouselElement.addEventListener('touchstart', (event) => {
+                    const touch = event.touches[0];
+                    touchStartX = touch.clientX;
+                    touchStartY = touch.clientY;
+                });
 
-        carouselElement.addEventListener('touchmove', (event) => {
-            const touch = event.touches[0];
-            touchEndX = touch.clientX;
-            touchEndY = touch.clientY;
-        });
+                carouselElement.addEventListener('touchmove', (event) => {
+                    const touch = event.touches[0];
+                    touchEndX = touch.clientX;
+                    touchEndY = touch.clientY;
+                });
 
-        carouselElement.addEventListener('touchend', () => {
-            const deltaX = Math.abs(touchEndX - touchStartX);
-            const deltaY = Math.abs(touchEndY - touchStartY);
+                carouselElement.addEventListener('touchend', () => {
+                    const deltaX = Math.abs(touchEndX - touchStartX);
+                    const deltaY = Math.abs(touchEndY - touchStartY);
 
-            if (deltaX > deltaY && deltaX > 30) {
-                if (touchEndX < touchStartX) {
-                    nextSlide(); // ← свайп влево → следующий слайд
-                } else {
-                    prevSlide(); // ← свайп вправо → предыдущий слайд
-                }
+                    if (deltaX > deltaY && deltaX > 30) {
+                        if (touchEndX < touchStartX) {
+                            nextSlide(); // ← свайп влево → следующий слайд
+                        } else {
+                            prevSlide(); // ← свайп вправо → предыдущий слайд
+                        }
+                    }
+                });
             }
-        });
-    }
 
-    // Для вертикального свайпа — разрешаем по всей странице
-    document.addEventListener('touchstart', (event) => {
-        const touch = event.touches[0];
-        touchStartY = touch.clientY;
-    });
+            // Для вертикального свайпа — разрешаем по всей странице
+            document.addEventListener('touchstart', (event) => {
+                const touch = event.touches[0];
+                touchStartY = touch.clientY;
+            });
 
-    document.addEventListener('touchmove', (event) => {
-        const touch = event.touches[0];
-        touchEndY = touch.clientY;
-    });
+            document.addEventListener('touchmove', (event) => {
+                const touch = event.touches[0];
+                touchEndY = touch.clientY;
+            });
 
-    document.addEventListener('touchend', () => {
-        const deltaY = touchEndY - touchStartY;
-        if (deltaY > 100) {
-            window.location.reload(); // Вертикальный свайп вниз — перезагрузка
+            document.addEventListener('touchend', () => {
+                const deltaY = touchEndY - touchStartY;
+                if (deltaY > 100) {
+                    window.location.reload(); // Вертикальный свайп вниз — перезагрузка
+                }
+            });
         }
-    });
-}
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
             const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
