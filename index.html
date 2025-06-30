@@ -361,6 +361,16 @@
     width: 100%;
 }
 
+.control-btn {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.control-btn:active {
+    transform: scale(1.05) !important;
+    transition: transform 0.1s ease;
+}
+
     </style>
 </head>
 
@@ -1121,62 +1131,66 @@
             updateActiveNav();
         }
 
-        function createFullNavigation() {
-            const navContainer = document.getElementById("fullNav");
-            navContainer.innerHTML = "";
-            const chunkSize = 22;
-            const totalSlides = Math.ceil(sounds.length / chunkSize);
-            for (let i = 0; i < sounds.length; i += chunkSize) {
-                const chunk = sounds.slice(i, i + chunkSize);
-                const slide = document.createElement("div");
-                slide.classList.add("slide");
-                chunk.forEach((_, indexInChunk) => {
-                    const globalIndex = i + indexInChunk;
-                    const button = document.createElement("div");
-                    button.className = "nav-item";
-                    button.textContent = sounds[globalIndex].transcriptionButton;
-                    button.onclick = () => {
-                        currentIndex = globalIndex;
-                        currentExampleIndex = 0;
-                        updateContent();
-                        updateActiveNav();
-                    };
-                    slide.appendChild(button);
-                });
-                const currentSlideIndex = i / chunkSize;
-                if (chunk.length === 22) {
-                    const emptyCell23 = document.createElement("div");
-                    emptyCell23.className = "nav-item empty-cell";
-                    slide.appendChild(emptyCell23);
-                    const controlBtn = document.createElement("div");
-                    controlBtn.className = "nav-item control-btn";
-                    if (currentSlideIndex === 0) {
-                        controlBtn.textContent = "→";
-                        controlBtn.onclick = () => {
-                            currentSlide = currentSlideIndex + 1;
-                            updateSlidePosition();
-                            updateActiveNav();
-                        };
-                        slide.appendChild(controlBtn);
-                    } else if (currentSlideIndex === totalSlides - 1) {
-                        const controlBtn23 = document.createElement("div");
-                        controlBtn23.className = "nav-item control-btn";
-                        controlBtn23.textContent = "←";
-                        controlBtn23.onclick = () => {
-                            currentSlide = currentSlideIndex - 1;
-                            updateSlidePosition();
-                            updateActiveNav();
-                        };
-                        slide.insertBefore(controlBtn23, emptyCell23);
-                    }
-                }
-                navContainer.appendChild(slide);
-            }
-            updateSlidePosition();
-            updateActiveNav();
-        }
+      function createFullNavigation() {
+    const navContainer = document.getElementById("fullNav");
+    navContainer.innerHTML = "";
+    const chunkSize = 22;
+    const totalSlides = Math.ceil(sounds.length / chunkSize);
+    
+    for (let i = 0; i < sounds.length; i += chunkSize) {
+        const chunk = sounds.slice(i, i + chunkSize);
+        const slide = document.createElement("div");
+        slide.classList.add("slide");
+        
+        chunk.forEach((_, indexInChunk) => {
+            const globalIndex = i + indexInChunk;
+            const button = document.createElement("div");
+            button.className = "nav-item";
+            button.textContent = sounds[globalIndex].transcriptionButton;
+            button.onclick = () => {
+                resetControlButtons(); // Сбрасываем кнопки при выборе элемента
+                currentIndex = globalIndex;
+                currentExampleIndex = 0;
+                updateContent();
+                updateActiveNav();
+            };
+            slide.appendChild(button);
+        });
 
-      
+        const currentSlideIndex = i / chunkSize;
+        if (chunk.length === 22) {
+            const emptyCell23 = document.createElement("div");
+            emptyCell23.className = "nav-item empty-cell";
+            slide.appendChild(emptyCell23);
+            
+            const controlBtn = document.createElement("div");
+            controlBtn.className = "nav-item control-btn";
+            
+            if (currentSlideIndex === 0) {
+                controlBtn.textContent = "→";
+                controlBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    nextSlide();
+                };
+                slide.appendChild(controlBtn);
+            } else if (currentSlideIndex === totalSlides - 1) {
+                const controlBtn23 = document.createElement("div");
+                controlBtn23.className = "nav-item control-btn";
+                controlBtn23.textContent = "←";
+                controlBtn23.onclick = (e) => {
+                    e.stopPropagation();
+                    prevSlide();
+                };
+                slide.insertBefore(controlBtn23, emptyCell23);
+            }
+        }
+        navContainer.appendChild(slide);
+    }
+    
+    updateSlidePosition();
+    updateActiveNav();
+}
+
         function updateSlidePosition() {
     const slidesContainer = document.querySelector(".slides-container");
     const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
@@ -1199,27 +1213,20 @@ function resetAllActiveItems() {
 }
 
 function updateActiveNav() {
-    // Находим текущий видимый слайд
-    const slides = document.querySelectorAll('.slide');
-    const visibleSlide = Array.from(slides).find(slide => {
-        const rect = slide.getBoundingClientRect();
-        return rect.left >= 0 && rect.right <= window.innerWidth;
-    });
+    resetControlButtons(); // Сбрасываем кнопки перед обновлением
     
-    if (!visibleSlide) return;
-    
-    // Обновляем активный элемент только в видимом слайде
-    const items = Array.from(visibleSlide.querySelectorAll(".nav-item")).filter(
-        el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
-    );
-    
-    items.forEach((item, idx) => {
-        const slideIndex = Array.from(slides).indexOf(visibleSlide);
-        const globalIndex = slideIndex * 22 + idx;
-        item.classList.toggle("active", globalIndex === currentIndex);
+    const allSlides = document.querySelectorAll(".slide");
+    allSlides.forEach((slide, slideIndex) => {
+        const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
+            el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
+        );
+        
+        items.forEach((item, idx) => {
+            const globalIndex = slideIndex * 22 + idx;
+            item.classList.toggle("active", globalIndex === currentIndex);
+        });
     });
 }
-
 
         function removeControlButtonActive() {
             const allSlides = document.querySelectorAll(".slide");
@@ -1230,6 +1237,13 @@ function updateActiveNav() {
                 });
             });
         }
+
+        function resetControlButtons() {
+    document.querySelectorAll('.control-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+}
+
 
         // function prevSlide() {
         //     if (currentSlide > 0) {
@@ -1248,10 +1262,10 @@ function updateActiveNav() {
         //         updateActiveNav();
         //     }
         // }
-
-        function prevSlide() {
+function prevSlide() {
     if (currentSlide > 0) {
-        resetAllActiveItems(); // Сбрасываем перед переходом
+        resetAllActiveItems(); // Сбрасываем все активные элементы
+        resetControlButtons(); // Сбрасываем активное состояние кнопок
         currentSlide--;
         updateSlidePosition();
     }
@@ -1260,7 +1274,8 @@ function updateActiveNav() {
 function nextSlide() {
     const totalSlides = Math.ceil(sounds.length / 22);
     if (currentSlide < totalSlides - 1) {
-        resetAllActiveItems(); // Сбрасываем перед переходом
+        resetAllActiveItems(); // Сбрасываем все активные элементы
+        resetControlButtons(); // Сбрасываем активное состояние кнопок
         currentSlide++;
         updateSlidePosition();
     }
@@ -1399,6 +1414,12 @@ function nextSlide() {
         //     initSwipeHandlers(); // <-- Убедиться, что эта строка есть
         // };
 
+        document.querySelectorAll('.control-btn').forEach(btn => {
+    btn.addEventListener('touchend', () => {
+        btn.classList.remove('active');
+    });
+});
+
         window.onload = () => {
     updateContent();
     createFullNavigation();
@@ -1406,6 +1427,8 @@ function nextSlide() {
     initSwipeHandlers();
     updateActiveNav(); // Первоначальное обновление активного элемента
 };
+
+
 
     </script>
 </body>
