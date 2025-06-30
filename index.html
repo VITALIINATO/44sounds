@@ -1087,9 +1087,7 @@
         let currentExampleIndex = 0;
         let currentSlide = 0;
 
-        let touchStartX = 0;
-let touchEndX = 0;
-
+     
 
         function updateContent() {
             const current = sounds[currentIndex];
@@ -1186,15 +1184,16 @@ let touchEndX = 0;
 
         
 
-      function updateSlidePosition() {
+     function updateSlidePosition() {
     const slidesContainer = document.querySelector(".slides-container");
     const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
     slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-
+    
     // Убираем active-класс у кнопок ← и →
     removeControlButtonActive();
 }
 
+// Эта функция уже существует, оставляем как есть
 function removeControlButtonActive() {
     const allSlides = document.querySelectorAll(".slide");
     allSlides.forEach(slide => {
@@ -1229,9 +1228,11 @@ function removeControlButtonActive() {
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-       function initSwipeHandlers() {
-            let touchStartY = 0;
-            let isSwipingDown = false;
+      function initSwipeHandlers() {
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let touchStartX = 0;
+    let touchEndX = 0;
 
             document.addEventListener('touchstart', (event) => {
                 // Берём первый доступный touch
@@ -1250,15 +1251,21 @@ function removeControlButtonActive() {
                 }
             });
 
-            document.addEventListener('touchend', (event) => {
-                const touchEndY = event.changedTouches[0].clientY;
-                const deltaY = touchEndY - touchStartY;
+            document.addEventListener('touchend', () => {
+        const deltaX = Math.abs(touchEndX - touchStartX);
+        const deltaY = Math.abs(touchEndY - touchStartY);
 
-                // Если свайп вниз длиннее 100px — перезагружаем страницу
-                if (isSwipingDown && deltaY > 100) {
-                    window.location.reload();
-                }
-            });
+        // Если это горизонтальный свайп
+        if (deltaX > deltaY && deltaX > 30) {
+            if (touchEndX < touchStartX) {
+                nextSlide(); // Свайп влево — следующий слайд
+            } else {
+                prevSlide(); // Свайп вправо — предыдущий слайд
+            }
+        }
+
+     
+    });
         }
 
 
@@ -1328,12 +1335,12 @@ function removeControlButtonActive() {
             speechSynthesis.speak(utterance);
         }
 
-        window.onload = () => {
-            updateContent();
-            createFullNavigation();
-            bindNavButtons();
-            initSwipeHandlers(); // <-- ВАЖНО! Здесь мы её вызываем
-        };
+       window.onload = () => {
+    updateContent();
+    createFullNavigation();
+    bindNavButtons();
+    initSwipeHandlers(); // <-- Убедиться, что эта строка есть
+};
     </script>
 </body>
 
