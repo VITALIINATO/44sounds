@@ -1227,7 +1227,59 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-    initSwipeHandlers()
+    function initSwipeHandlers() {
+    const carouselElement = document.querySelector('.carousel-wrapper'); // Только внутри карусели
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    // Для горизонтального свайпа — только внутри карусели
+    if (carouselElement) {
+        carouselElement.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        });
+
+        carouselElement.addEventListener('touchmove', (event) => {
+            const touch = event.touches[0];
+            touchEndX = touch.clientX;
+            touchEndY = touch.clientY;
+        });
+
+        carouselElement.addEventListener('touchend', () => {
+            const deltaX = Math.abs(touchEndX - touchStartX);
+            const deltaY = Math.abs(touchEndY - touchStartY);
+
+            if (deltaX > deltaY && deltaX > 30) {
+                if (touchEndX < touchStartX) {
+                    nextSlide(); // ← свайп влево → следующий слайд
+                } else {
+                    prevSlide(); // ← свайп вправо → предыдущий слайд
+                }
+            }
+        });
+    }
+
+    // Для вертикального свайпа — разрешаем по всей странице
+    document.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        touchStartY = touch.clientY;
+    });
+
+    document.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        touchEndY = touch.clientY;
+    });
+
+    document.addEventListener('touchend', () => {
+        const deltaY = touchEndY - touchStartY;
+        if (deltaY > 100) {
+            window.location.reload(); // Вертикальный свайп вниз — перезагрузка
+        }
+    });
+}
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
             const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
