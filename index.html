@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
     <title>English Sounds</title>
@@ -8,42 +7,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Charis+SIL&display=swap " rel="stylesheet">
     <style>
         :root {
-            /* Современная палитра с фиолетово-розовыми акцентами */
             --primary-color: #8e2de2;
-            /* Глубокий фиолетовый */
-            --primary-color: #b270ec;
-            /* Глубокий фиолетовый */
             --primary-gradient: linear-gradient(45deg, #8e2de2, #4a00e0);
-            /* --secondary-color: #ff6b6b; */
             --secondary-color: #524a9c;
             --third-color: #565181;
-
-            --highlight-main: #8e2de2;
-            --highlight-accent: #5e4949;
-            /*--success-color: #00ffaa;  Сохраняем салатовый для транскрипции */
             --success-color: #29b875;
-            /* Сохраняем салатовый для транскрипции */
             --bg-gradient: radial-gradient(circle at top left, #1a1a1a, #0f0f0f);
             --border-radius: 15px;
             --transition: all 0.3s ease;
             --neon-glow: #a98bb3;
-            /* --neon-glow: 0 0 15px #8e2de2, 0 0 30px #8e2de2; */
             --glass-effect: rgba(255, 255, 255, 1.15);
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
         body {
             margin: 0;
             padding: 0;
             background: transparent;
             overflow: hidden;
         }
-
         .container {
             z-index: 10;
             top: 50%;
@@ -64,7 +49,6 @@
             position: absolute;
             padding-bottom: 10px;
         }
-
         .carousel-wrapper {
             position: relative;
             width: auto;
@@ -73,7 +57,6 @@
             overflow: hidden;
             margin-left: 10px;
         }
-
         h1,
         h2 {
             text-align: center;
@@ -83,13 +66,11 @@
             margin-bottom: 16px;
             font-size: 1.5rem;
         }
-
         .sound {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-
         .transcription-button {
             font-family: 'Charis SIL';
             position: relative;
@@ -104,30 +85,16 @@
             border-radius: var(--border-radius);
             transition: var(--transition);
             background: linear-gradient(0deg, #2d2d2d, #242424);
-            /* box-shadow: 0 0 10px rgba(142, 45, 226, 0.3), inset 0 0 10px rgba(142, 45, 226, 0.1); */
             box-shadow: 0 0 10px rgba(219, 62, 219, 0.623), inset 0 0 10px rgba(216, 14, 189, 0.616);
             margin-top: 20px;
-
         }
-
         .transcription-symbol {
             font-family: 'Charis SIL';
             font-size: 30px;
             font-weight: bold;
             padding: 20px;
             color: var(--primary-color);
-            /* text-shadow: 0 0 2px var(--primary-color), 0 0 2px var(--primary-color); */
-
-
-            /* text-shadow:
-                0 0 5px #00ffff,
-                0 0 10px #00ffff;  */
-            /* -webkit-text-stroke: 1px #ff6b6b;  */
-            /* Обводка вокруг букв */
         }
-
-
-
         .tooltip {
             z-index: 10;
             background: #1a1a1a;
@@ -149,33 +116,26 @@
             visibility: hidden;
             pointer-events: none;
         }
-
         .transcription-button:hover .tooltip,
         .transcription-button:focus .tooltip {
             opacity: 1;
             visibility: visible;
             transition-delay: 0.3s;
         }
-
         .examples-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             margin-top: 50px;
-
         }
-
         .example-section {
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
             width: 100%;
-
         }
-
         .example-button {
-
             width: 100%;
             max-width: 400px;
             background: transparent;
@@ -188,72 +148,49 @@
             cursor: pointer;
             position: relative;
         }
-
         .word {
-
             font-size: 45px;
             font-weight: bold;
             color: var(--secondary-color);
-            /* text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); */
         }
-
         .highlighted {
             color: var(--primary-color);
             text-shadow: 0 0 5px var(--primary-color), 0 0 2px var(--primary-color);
-            /* text-shadow: 0 0 10px var(--primary-color); */
-            /* -webkit-text-stroke: 1px black; Обводка вокруг букв */
-            /* display: contents; */
-            /* font-weight: 900; */
         }
-
         .transcription {
             font-size: 30px;
             color: var(--third-color);
-            /* text-shadow: 0 0 1px var(--highlight-accent), 0 0 1px var(--highlight-accent); */
-            /* font-weight: bold; */
         }
-
         .translation {
             font-size: 20px;
             color: #cccccc;
             font-style: italic;
         }
-
         .nav-buttons {
             display: flex;
             justify-content: space-between;
             gap: 150px;
             width: 100%;
         }
-
         .nav-buttons button {
             flex: 1;
             background: transparent;
             color: var(--neon-glow);
-            /* color: var(--neon-glow); */
             border: none;
             border-radius: var(--border-radius);
             cursor: pointer;
-            /* font-weight: bold; */
             transition: var(--transition);
-            
         }
-
         .nav-buttons button:hover {
             transform: scale(1.05) rotate(0deg);
-            /* box-shadow: 0 0 10px var(--primary-color), 0 0 10px var(--primary-color); */
             background: var(--secondary-gradient);
             color: #f8f4f4;
-
         }
-
         .slides-container {
             display: flex;
             transition: transform 0.5s ease-in-out;
             width: 100%;
-            
         }
-
         .slide {
             display: grid;
             grid-template-columns: repeat(6, minmax(40px, 1fr));
@@ -261,9 +198,8 @@
             width: 100%;
             flex-shrink: 0;
             min-width: 100%;
-             padding: 10px 0; /* добавляем отступ сверху и снизу */
+            padding: 10px 0;
         }
-
         .nav-item {
             padding: 5px;
             background: linear-gradient(145deg, #111111, #1e1e1e);
@@ -273,25 +209,19 @@
             cursor: pointer;
             font-size: 24px;
             transition: var(--transition);
-            /* box-shadow: 0 0 25px rgba(142, 45, 226, 0.3); */
-            text-shadow: 0 0 1px var(--primaryy-color), 0 0 1px var(--primaryy-color);
         }
-
         .nav-item:hover,
         .nav-item.active {
             background: var(--secondary-gradient);
             color: #e71abb;
             transform: scale(1.05);
             font-weight: 900;
-
         }
-
         .carousel-controls {
             display: flex;
             justify-content: space-between;
             width: 100%;
         }
-
         .control-btn {
             font-size: 20px !important;
             color: var(--primary-color);
@@ -305,58 +235,46 @@
             box-shadow: 0 0 10px rgba(142, 45, 226, 0.3);
             border-radius: 10px;
         }
-
         .control-btn:hover {
             background: var(--primary-gradient);
             color: white;
             transform: scale(1.1);
         }
-
         @media (max-width: 480px) {
             .transcription-button {
                 height: 80px;
                 font-size: 20px;
                 margin-bottom: 10px;
             }
-
             .transcription-symbol {
                 font-size: 40px;
             }
-
             .word {
                 font-size: 1.5em;
             }
-
             .transcription {
                 font-size: 1.1em;
             }
-
             .translation {
                 font-size: 0.9em;
             }
-
             .nav-buttons button {
                 font-size: 1rem;
             }
-
             .slide {
                 gap: 6px;
             }
-
             .nav-item {
                 font-size: 16px;
             }
         }
-  .carousel-wrapper {
+        .carousel-wrapper {
             position: relative;
             width: auto;
             height: auto;
             margin-right: 10px;
             overflow: hidden;
             margin-left: 10px;
-            /* padding: 5px; */
-            /* gap: 5px; */
-
         }
         .carousel-controls {
             position: absolute;
@@ -365,15 +283,9 @@
             right: 0;
             display: flex;
             justify-content: space-between;
-            /* padding: 10px; */
             z-index: 10;
-            /* Поверх слайдов */
-            pointer-events: auto;
-            /* Чтобы кнопки были кликабельны */
-              pointer-events: none;
-
+            pointer-events: none;
         }
-
         .carousel-btn {
             background: transparent;
             color: var(--primary-color);
@@ -384,33 +296,24 @@
             font-size: 25px;
             transition: all 0.3s ease;
         }
-
         .carousel-btn:hover {
             background: var(--primary-gradient);
             color: #fdfcfc;
             transform: scale(1.1);
         }
-
         .empty-cell,
         .control-btn {
-            /* font-size: 1.4rem !important; */
-            /* font-weight: bolder; */
             background-color: #1a1a1a !important;
-            /* Основной цвет ячеек */
             color: #d3d2d6;
-            /* Цвет текста, если нужно */
             visibility: visible;
-            /* Убираем скрытие */
             opacity: 1;
         }
     </style>
 </head>
-
 <body>
     <div class="container">
         <div class="sound">
-            <button class="transcription-button" onclick="playSound(sounds[currentIndex].soundFile)"
-                id="transcriptionButton"></button>
+            <button class="transcription-button" onclick="playSound(sounds[currentIndex].soundFile)" id="transcriptionButton"></button>
         </div>
         <div class="examples-container">
             <div class="example-section">
@@ -422,26 +325,24 @@
                 <div style="text-align: center; margin: 20px 0;">
                     <img id="centeredImage" src="" alt="Пример изображения"
                         style="width: 200px; height: 200px; display: none; border-radius: 15px; box-shadow: 0 0 15px rgba(153, 0, 255, 0.3), inset 0 0 10px rgba(132, 0, 255, 0.1);"
-                        onclick="nextExample()" />
+                        onclick="handleImageClick(event)" />
                 </div>
-
-
             </div>
         </div>
         <div class="carousel-wrapper">
-            <!-- Кнопки переключения слайдов -->
-            <!-- <div class="carousel-controls">
-                <button class="carousel-btn prev">&#10094;</button>
-                <button class="carousel-btn next">&#10095;</button>
-            </div> -->
-
-            <!-- Слайды с навигацией -->
+            <div class="carousel-controls">
+                <!-- <button class="carousel-btn prev">&#10094;</button> -->
+                <!-- <button class="carousel-btn next">&#10095;</button> -->
+            </div>
             <div class="slides-container" id="fullNav"></div>
         </div>
-
     </div>
     <audio id="audioPlayer"></audio>
     <script>
+        let touchStartY = 0;
+        let isSwipingDown = false;
+
+        // Сокращенный массив sounds для примера
         const sounds = [
             {
 
@@ -1136,6 +1037,7 @@
         ];
         let currentIndex = 0;
         let currentExampleIndex = 0;
+        let currentSlide = 0;
 
         function updateContent() {
             const current = sounds[currentIndex];
@@ -1165,16 +1067,12 @@
         function createFullNavigation() {
             const navContainer = document.getElementById("fullNav");
             navContainer.innerHTML = "";
-
             const chunkSize = 22;
             const totalSlides = Math.ceil(sounds.length / chunkSize);
-
             for (let i = 0; i < sounds.length; i += chunkSize) {
                 const chunk = sounds.slice(i, i + chunkSize);
                 const slide = document.createElement("div");
                 slide.classList.add("slide");
-
-                // Добавляем звуки (22 штуки)
                 chunk.forEach((_, indexInChunk) => {
                     const globalIndex = i + indexInChunk;
                     const button = document.createElement("div");
@@ -1188,22 +1086,14 @@
                     };
                     slide.appendChild(button);
                 });
-
                 const currentSlideIndex = i / chunkSize;
-
-                // Добавляем пустые ячейки и кнопки в зависимости от слайда
                 if (chunk.length === 22) {
-                    // Добавляем пустую 23-ю ячейку
                     const emptyCell23 = document.createElement("div");
                     emptyCell23.className = "nav-item empty-cell";
                     slide.appendChild(emptyCell23);
-
-                    // Добавляем кнопку на 24-ю ячейку
                     const controlBtn = document.createElement("div");
                     controlBtn.className = "nav-item control-btn";
-
                     if (currentSlideIndex === 0) {
-                        // Слайд 1: ❯ на 24-й ячейке
                         controlBtn.textContent = "→";
                         controlBtn.onclick = () => {
                             currentSlide = currentSlideIndex + 1;
@@ -1212,7 +1102,6 @@
                         };
                         slide.appendChild(controlBtn);
                     } else if (currentSlideIndex === totalSlides - 1) {
-                        // Последний слайд: ❮ на 23-й ячейке
                         const controlBtn23 = document.createElement("div");
                         controlBtn23.className = "nav-item control-btn";
                         controlBtn23.textContent = "←";
@@ -1221,19 +1110,14 @@
                             updateSlidePosition();
                             updateActiveNav();
                         };
-                        // Вставляем кнопку ❮ на 23-ю ячейку (после 22 звуков)
                         slide.insertBefore(controlBtn23, emptyCell23);
                     }
                 }
-
                 navContainer.appendChild(slide);
             }
-
             updateSlidePosition();
             updateActiveNav();
         }
-
-
 
         function updateActiveNav() {
             const allSlides = document.querySelectorAll(".slide");
@@ -1241,7 +1125,6 @@
                 const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
                     el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
                 );
-
                 items.forEach((item, idx) => {
                     const globalIndex = slideIndex * 22 + idx;
                     item.classList.toggle("active", globalIndex === currentIndex);
@@ -1282,29 +1165,43 @@
         function initSwipeHandlers() {
             const carouselWrapper = document.querySelector('.carousel-wrapper');
             if (!carouselWrapper) return;
-
+            
             let touchStartX = 0;
             let touchEndX = 0;
-
+            
             carouselWrapper.addEventListener('touchstart', (event) => {
                 touchStartX = event.touches[0].clientX;
+                touchStartY = event.touches[0].clientY;
+                isSwipingDown = false;
             });
-
+            
+            carouselWrapper.addEventListener('touchmove', (event) => {
+                const deltaY = event.touches[0].clientY - touchStartY;
+                if (deltaY > 30) { // Если свайп вниз более чем на 30px
+                    isSwipingDown = true;
+                }
+            });
+            
             carouselWrapper.addEventListener('touchend', (event) => {
                 touchEndX = event.changedTouches[0].clientX;
-                handleSwipe();
-            });
-
-            function handleSwipe() {
-                const swipeThreshold = 50;
                 const deltaX = touchEndX - touchStartX;
-
-                if (deltaX > swipeThreshold) {
-                    prevSlide(); // Свайп вправо
-                } else if (deltaX < -swipeThreshold) {
-                    nextSlide(); // Свайп влево
+                
+                // Для свайпа влево/вправо
+                if (!isSwipingDown) {
+                    const swipeThreshold = 50;
+                    if (deltaX > swipeThreshold) {
+                        prevSlide(); // Свайп вправо
+                    } else if (deltaX < -swipeThreshold) {
+                        nextSlide(); // Свайп влево
+                    }
                 }
-            }
+                
+                // Для свайпа вниз
+                const deltaY = event.changedTouches[0].clientY - touchStartY;
+                if (isSwipingDown && deltaY > 100) { // Если свайп вниз более чем на 100px
+                    window.location.reload(); // Обновляем страницу
+                }
+            });
         }
 
         function highlightTranscription(transcr, part) {
@@ -1318,7 +1215,6 @@
             if (!part || !letter.includes(part)) return letter;
             return letter.replace(new RegExp(part, 'gi'), `<span class="highlighted">${part}</span>`);
         }
-
 
         function nextExample() {
             if (currentExampleIndex < sounds[currentIndex].examples.length - 1) {
@@ -1334,17 +1230,20 @@
             }
         }
 
-        centeredImage.onclick = function (e) {
-            const rect = e.target.getBoundingClientRect();
-            const x = e.clientX - rect.left;
+        function handleImageClick(event) {
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left;
             const width = rect.width;
-
+            
             if (x < width / 2) {
                 prevExample(); // Левая половина — назад
             } else {
                 nextExample(); // Правая половина — вперед
             }
-        };
+            
+            // Озвучиваем текущее слово
+            speakCurrentWord();
+        }
 
         function updateExampleDisplay() {
             const sound = sounds[currentIndex];
@@ -1370,11 +1269,13 @@
             utterance.lang = "en-US";
             speechSynthesis.speak(utterance);
         }
+
         window.onload = () => {
             updateContent();
             createFullNavigation();
+            bindNavButtons();
+            initSwipeHandlers();
         };
     </script>
 </body>
-
 </html>
