@@ -349,6 +349,11 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .control-btn:focus,
+.control-btn:active {
+    outline: none;
+}
     </style>
 </head>
 
@@ -1175,11 +1180,26 @@
             });
         }
 
-        function updateSlidePosition() {
-            const slidesContainer = document.querySelector(".slides-container");
-            const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
-            slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-        }
+        
+
+      function updateSlidePosition() {
+    const slidesContainer = document.querySelector(".slides-container");
+    const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
+    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+
+    // Убираем active-класс у кнопок ← и →
+    removeControlButtonActive();
+}
+
+function removeControlButtonActive() {
+    const allSlides = document.querySelectorAll(".slide");
+    allSlides.forEach(slide => {
+        const controlButtons = slide.querySelectorAll(".control-btn");
+        controlButtons.forEach(btn => {
+            btn.classList.remove("active"); // Убираем активный класс
+        });
+    });
+}
 
         function prevSlide() {
             if (currentSlide > 0) {
