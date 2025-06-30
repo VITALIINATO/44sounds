@@ -1,607 +1,1366 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Два графика дежурств</title>
-  <style>
-    :root {
-      --primary-color: #2E4039; /* Темно-зеленый */
-      --secondary-color: #5A7F6A; /* Хаки */
-      --accent-color: #C2B280; /* Песочный */
-      --bg-color: #1C1C1C; /* Тёмно-серый фон */
-      --text-color: #F0F0E0;
-      --card-bg: #2A2A2A;
-      --dark-gray: #444;
-      --light-gray: #555;
-      --border-radius: 0.3rem;
-      --transition-speed: 0.3s;
-      --font-family: 'Courier New', Courier, monospace;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: var(--font-family);
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: start;
-      min-height: 100vh;
-      padding: 1.5rem;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      background-image: url('https://www.transparenttextures.com/patterns/diagonal-noise.png');  
-      background-repeat: repeat;
-    }
-    .container {
-      width: 100%;
-      max-width: 300px;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      border: 1px solid #333;
-    }
-    header {
-      background: var(--primary-color);
-      color: white;
-      padding: 0.5rem;
-      text-align: center;
-      font-size: 1.3rem;
-      font-weight: bold;
-      border-bottom: 2px solid var(--secondary-color);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    header .date-range {
-      font-size: 1rem;
-      opacity: 0.9;
-      margin-top: 0.2rem;
-      font-weight: normal;
-    }
-    header .date-picker {
-      margin-top: 0.2rem;
-      padding: 0.3rem 0.6rem;
-      border-radius: var(--border-radius);
-      border: none;
-      font-size: 0.8rem;
-      background: #333;
-      color: white;
-      font-family: var(--font-family);
-    }
-    main {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 1rem;
-    }
-    .schedule {
-      display: flex;
-      flex-direction: column;
-      gap: 0.2rem;
-    }
-    .schedule-item {
-      padding: 0.3rem;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      transition: background var(--transition-speed), transform var(--transition-speed);
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--dark-gray);
-      border-left: 3px solid var(--accent-color);
-    }
-    .schedule-item:nth-child(even) {
-      border-left: 3px solid var(--secondary-color);
-    }
-    .draggable-over {
-      outline: 2px dashed var(--accent-color);
-      background: #3a3a3a !important;
-    }
-    .footer-section {
-      padding-left: 1rem;
-      padding-right: 1rem;
-      background: #222;
-      border-top: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .footer-section > div {
-      flex: 1;
-      min-width: 200px;
-      margin-bottom: 10px;
-    }
-    .footer-section label {
-      display: block;
-      font-weight: bold;
-      margin-top: 0.5rem;
-      color: var(--accent-color);
-      text-align: center;
-      font-size: 0.9rem;
-    }
-    .target-area {
-      background: #333;
-      padding: 0.5rem;
-      border-radius: var(--border-radius);
-      min-height: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.3rem;
-      align-items: flex-start;
-      border: 1px dashed var(--secondary-color);
-    }
-    .target-area span {
-      background: var(--secondary-color);
-      color: white;
-      padding: 0.25rem 0.5rem;
-      border-radius: var(--border-radius);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: background var(--transition-speed);
-      font-family: var(--font-family);
-    }
-    .target-area span:hover {
-      background: var(--accent-color);
-      color: black;
-    }
-    .name-buttons-container {
-      position: sticky;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      max-width: 300px;
-      padding: 1rem;
-      flex-shrink: 0;
-      border: 1px solid #333;
-      font-family: var(--font-family);
-    }
-    .name-buttons-container h2 {
-      font-size: 1rem;
-      color: var(--accent-color);
-      margin-bottom: 1rem;
-      text-align: center;
-      letter-spacing: 1px;
-    }
-    .name-buttons {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.5rem;
-    }
-    button.name-btn {
-      background: var(--secondary-color);
-      color: white;
-      border: none;
-      padding: 0.5rem 0.75rem;
-      border-radius: var(--border-radius);
-      cursor: grab;
-      transition: background var(--transition-speed), transform var(--transition-speed);
-      font-size: 0.85rem;
-      text-align: center;
-      font-family: var(--font-family);
-      letter-spacing: 0.5px;
-      border: 1px solid #111;
-    }
-    button.name-btn:hover {
-      background: var(--accent-color);
-      color: black;
-      transform: translateY(-2px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-    }
-    #archive-section {
-      width: 100%;
-      max-width: 600px;
-      margin-top: 1.5rem;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
-      overflow: hidden;
-      border: 1px solid #333;
-    }
-    #archive {
-      max-height: 500px;
-      overflow-y: auto;
-      padding: 1rem;
-    }
-    @media (max-width: 1024px) {
-      body {
-        flex-direction: column;
-        align-items: center;
-      }
-      .container {
-        width: 100%;
-        max-width: 100%;
-      }
-      #archive-section {
-        max-width: 100%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <!-- Первый график -->
-  <div class="container">
-    <header>
-      <div class="date-range" id="dateRange1">Обрати дату</div>
-      <input type="date" class="date-picker" id="datePicker1" />
-    </header>
-    <main>
-      <section class="time-column">
-        <div id="schedule1" class="schedule"></div>
-      </section>
-    </main>
-    <footer class="footer-section">
-      <div>
-        <label for="leader1">Черговий:</label>
-        <div id="leader1" class="target-area" ondragover="handleDragOver(event)"
-          ondrop="handleDropToLeader(event, this)"></div>
-      </div>
-      <div>
-        <label for="absent1">Увал:</label>
-        <div id="absent1" class="target-area" ondragover="handleDragOver(event)"
-          ondrop="handleDropToTarget(event, this)"></div>
-      </div>
-    </footer>
-  </div>
+    <meta charset="UTF-8">
+    <title>English Sounds</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Charis+SIL&display=swap " rel="stylesheet">
+    <style>
+        :root {
+            /* Современная палитра с фиолетово-розовыми акцентами */
+            --primary-color: #8e2de2;
+            /* Глубокий фиолетовый */
+            --primary-color: #b270ec;
+            /* Глубокий фиолетовый */
+            --primary-gradient: linear-gradient(45deg, #8e2de2, #4a00e0);
+            /* --secondary-color: #ff6b6b; */
+            --secondary-color: #524a9c;
+            --third-color: #565181;
 
-  <!-- Второй график -->
-  <div class="container">
-    <header>
-      <div class="date-range" id="dateRange2">Обрати дату</div>
-      <input type="date" class="date-picker" id="datePicker2" />
-    </header>
-    <main>
-      <section class="time-column">
-        <div id="schedule2" class="schedule"></div>
-      </section>
-    </main>
-    <footer class="footer-section">
-      <div>
-        <label for="leader2">Черговий:</label>
-        <div id="leader2" class="target-area" ondragover="handleDragOver(event)"
-          ondrop="handleDropToLeader(event, this)"></div>
-      </div>
-      <div>
-        <label for="absent2">Увал:</label>
-        <div id="absent2" class="target-area" ondragover="handleDragOver(event)"
-          ondrop="handleDropToTarget(event, this)"></div>
-      </div>
-    </footer>
-  </div>
-
-  <!-- База имён справа -->
-  <div class="name-buttons-container">
-    <h2>Сотрудники</h2>
-    <button onclick="saveData()" style="margin-bottom: 1rem; width: 100%; padding: 0.5rem; background: var(--accent-color); color: black; font-weight: bold;">Сохранить в архив</button>
-    <div id="name-buttons" class="name-buttons"></div>
-  </div>
-
-  <!-- Архив -->
-  <div id="archive-section" class="container">
-    <header>
-      <div class="date-range">Архів</div>
-    </header>
-    <main>
-      <div id="archive" style="padding: 1rem;"></div>
-    </main>
-  </div>
-
-  <script>
-    const names = [
-      "НАТО", "Нік", "Порш", "Тесла", "Жекос",
-      "Кот", "Вірус", "Грозний", "Падре", "Сіма",
-      "Ваха", "Каїр", 
-    ];
-    const timeSlots = [
-      "08:00 - 10:00", "10:00 - 12:00", "12:00 - 14:00",
-      "14:00 - 16:00", "16:00 - 18:00", "18:00 - 20:00",
-      "20:00 - 22:00", "22:00 - 00:00", "00:00 - 02:00",
-      "02:00 - 04:00", "04:00 - 06:00", "06:00 - 08:00"
-    ];
-    let draggedItem = null;
-
-    // Создание слотов расписания
-    function createScheduleSlots(containerId, dateRangeId, datePickerId) {
-      const schedule = document.getElementById(containerId);
-      schedule.innerHTML = '';
-      timeSlots.forEach((slot, index) => {
-        const div = document.createElement('div');
-        div.className = 'schedule-item';
-        div.setAttribute('data-id', `slot-${index}`);
-        div.setAttribute('data-time', slot);
-        div.setAttribute('draggable', true);
-        div.innerHTML = `<strong>${slot}</strong><span class="assigned-names" style="margin-left: 10px; font-weight: bold;"></span>`;
-        div.addEventListener('dragover', handleDragOver);
-        div.addEventListener('drop', (e) => handleDropToSlot(e, div));
-        div.addEventListener('dragenter', handleDragEnter);
-        div.addEventListener('dragleave', handleDragLeave);
-        schedule.appendChild(div);
-      });
-
-      // Обработчик даты
-      document.getElementById(datePickerId).addEventListener('change', function () {
-        const selectedDate = new Date(this.value);
-        if (!isNaN(selectedDate.getTime())) {
-          const day = String(selectedDate.getDate()).padStart(2, '0');
-          const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
-          const nextDay = new Date(selectedDate);
-          nextDay.setDate(nextDay.getDate() + 1);
-          const nday = String(nextDay.getDate()).padStart(2, '0');
-          const nmonth = String(nextDay.getMonth() + 1).padStart(2, '0');
-          document.getElementById(dateRangeId).textContent = `с ${day}.${month} по ${nday}.${nmonth}`;
-          
-          // Автоматическая загрузка данных при выборе даты
-          const archive = JSON.parse(localStorage.getItem('archive') || '{}');
-          const date = this.value;
-          const container = containerId;
-          const savedData = archive[date];
-          if (!savedData) return;
-
-          const scheduleKey = container === 'schedule1' ? 'schedule1' : 'schedule2';
-          const data = savedData[scheduleKey];
-          if (!data) return;
-
-          // Очистка текущих назначений
-          const slots = document.querySelectorAll(`#${container} .schedule-item`);
-          slots.forEach(slot => {
-            slot.querySelector('.assigned-names').innerHTML = '';
-          });
-
-          // Восстановление слотов
-          Object.entries(data.shifts).forEach(([time, names]) => {
-            const slot = [...document.querySelectorAll(`#${container} .schedule-item`)].find(s => s.getAttribute('data-time') === time);
-            if (slot) {
-              const assignedNamesSpan = slot.querySelector('.assigned-names');
-              names.forEach(name => {
-                const span = document.createElement('span');
-                span.textContent = name;
-                span.style.marginLeft = '6px';
-                span.style.fontWeight = 'bold';
-                span.addEventListener('click', (ev) => {
-                  ev.stopPropagation();
-                  span.remove();
-                });
-                assignedNamesSpan.appendChild(span);
-              });
-            }
-          });
-
-          // Восстановление черговий и увал
-          const leaderId = container === 'schedule1' ? 'leader1' : 'leader2';
-          const absentId = container === 'schedule1' ? 'absent1' : 'absent2';
-
-          const leaderDiv = document.getElementById(leaderId);
-          leaderDiv.innerHTML = '';
-          data.leader.forEach(name => {
-            const span = document.createElement('span');
-            span.textContent = name;
-            span.addEventListener('click', (ev) => {
-              ev.stopPropagation();
-              span.remove();
-            });
-            leaderDiv.appendChild(span);
-          });
-
-          const absentDiv = document.getElementById(absentId);
-          absentDiv.innerHTML = '';
-          data.absent.forEach(name => {
-            const span = document.createElement('span');
-            span.textContent = name;
-            span.addEventListener('click', (ev) => {
-              ev.stopPropagation();
-              span.remove();
-            });
-            absentDiv.appendChild(span);
-          });
-        } else {
-          document.getElementById(dateRangeId).textContent = 'Выберите дату';
+            --highlight-main: #8e2de2;
+            --highlight-accent: #5e4949;
+            /*--success-color: #00ffaa;  Сохраняем салатовый для транскрипции */
+            --success-color: #29b875;
+            /* Сохраняем салатовый для транскрипции */
+            --bg-gradient: radial-gradient(circle at top left, #1a1a1a, #0f0f0f);
+            --border-radius: 15px;
+            --transition: all 0.3s ease;
+            --neon-glow: #a98bb3;
+            /* --neon-glow: 0 0 15px #8e2de2, 0 0 30px #8e2de2; */
+            --glass-effect: rgba(255, 255, 255, 1.15);
         }
-      });
-    }
 
-    // Создание кнопок сотрудников
-    function createNameButtons() {
-      const container = document.getElementById('name-buttons');
-      container.innerHTML = '';
-      names.forEach((name) => {
-        const btn = document.createElement('button');
-        btn.className = 'name-btn';
-        btn.textContent = name;
-        btn.setAttribute('draggable', true);
-        btn.setAttribute('data-name', name);
-        btn.addEventListener('dragstart', handleDragStart);
-        btn.addEventListener('dragend', handleDragEnd);
-        container.appendChild(btn);
-      });
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    // Обработчики drag-and-drop
-    function handleDragStart(e) {
-      draggedItem = this;
-      setTimeout(() => this.style.opacity = '0.5', 0);
-    }
-    function handleDragEnd(e) {
-      this.style.opacity = '1';
-      draggedItem = null;
-    }
-    function handleDragOver(e) {
-      e.preventDefault();
-    }
-    function handleDragEnter(e) {
-      e.target.classList.add('draggable-over');
-    }
-    function handleDragLeave(e) {
-      e.target.classList.remove('draggable-over');
-    }
-    function handleDropToSlot(e, target) {
-      e.preventDefault();
-      if (!draggedItem) return;
-      const name = draggedItem.getAttribute('data-name');
-      const assignedNamesSpan = target.querySelector('.assigned-names');
-      // Проверка на дубликат
-      if ([...assignedNamesSpan.childNodes].some(n => n.textContent === name)) return;
-      const span = document.createElement('span');
-      span.textContent = name;
-      span.style.marginLeft = '6px';
-      span.style.fontWeight = 'bold';
-      span.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        span.remove();
-      });
-      assignedNamesSpan.appendChild(span);
-      target.classList.remove('draggable-over');
-    }
-    function handleDropToTarget(e, target) {
-      e.preventDefault();
-      if (!draggedItem) return;
-      const name = draggedItem.getAttribute('data-name');
-      if (![...target.children].some(child => child.textContent === name)) {
-        const span = document.createElement('span');
-        span.textContent = name;
-        span.addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          span.remove();
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            overflow: hidden;
+        }
+
+        .container {
+            z-index: 10;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: calc(100vw * 16 / 9);
+            max-height: 100vh;
+            max-width: calc(100vh * 9 / 16);
+            background: var(--bg-gradient);
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 120px rgba(142, 45, 226, 0.3), inset 0 0 10px rgba(142, 45, 226, 0.1);
+            backdrop-filter: blur(150px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            position: absolute;
+            padding-bottom: 10px;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: auto;
+            height: auto;
+            margin-right: 10px;
+            overflow: hidden;
+            margin-left: 10px;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 0 0 10px var(--primary-color), 0 0 20px var(--primary-color);
+            margin-bottom: 16px;
+            font-size: 1.5rem;
+        }
+
+        .sound {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .transcription-button {
+            font-family: 'Charis SIL';
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            height: 60px;
+            cursor: pointer;
+            border: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            background: linear-gradient(0deg, #2d2d2d, #242424);
+            /* box-shadow: 0 0 10px rgba(142, 45, 226, 0.3), inset 0 0 10px rgba(142, 45, 226, 0.1); */
+            box-shadow: 0 0 10px rgba(219, 62, 219, 0.623), inset 0 0 10px rgba(216, 14, 189, 0.616);
+            margin-top: 20px;
+
+        }
+
+        .transcription-symbol {
+            font-family: 'Charis SIL';
+            font-size: 30px;
+            font-weight: bold;
+            padding: 20px;
+            color: var(--primary-color);
+            text-shadow: 0 0 2px var(--primary-color), 0 0 2px var(--primary-color);
+
+
+            /* text-shadow:
+                0 0 5px #00ffff,
+                0 0 10px #00ffff;  */
+            /* -webkit-text-stroke: 1px #ff6b6b;  */
+            /* Обводка вокруг букв */
+        }
+
+
+
+        .tooltip {
+            z-index: 10;
+            background: #1a1a1a;
+            color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(142, 45, 226, 0.4);
+            border: 1px solid rgba(142, 45, 226, 0.3);
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 10px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            white-space: normal;
+            width: 90vw;
+            max-width: 400px;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .transcription-button:hover .tooltip,
+        .transcription-button:focus .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0.3s;
+        }
+
+        .examples-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+
+        }
+
+        .example-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            width: 100%;
+
+        }
+
+        .example-button {
+
+            width: 100%;
+            max-width: 400px;
+            background: transparent;
+            border: none;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            color: #ffffff;
+            font-size: 18px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .word {
+
+            font-size: 45px;
+            font-weight: bold;
+            color: var(--secondary-color);
+            /* text-shadow: 0 0 5px var(--primary-color), 0 0 10px var(--primary-color); */
+        }
+
+        .highlighted {
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color), 0 0 2px var(--primary-color);
+            /* text-shadow: 0 0 10px var(--primary-color); */
+            /* -webkit-text-stroke: 1px black; Обводка вокруг букв */
+            /* display: contents; */
+            /* font-weight: 900; */
+        }
+
+        .transcription {
+            font-size: 30px;
+            color: var(--third-color);
+            /* text-shadow: 0 0 1px var(--highlight-accent), 0 0 1px var(--highlight-accent); */
+            /* font-weight: bold; */
+        }
+
+        .translation {
+            font-size: 20px;
+            color: #cccccc;
+            font-style: italic;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 150px;
+            width: 100%;
+        }
+
+        .nav-buttons button {
+            flex: 1;
+            background: transparent;
+            color: var(--neon-glow);
+            /* color: var(--neon-glow); */
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            /* font-weight: bold; */
+            transition: var(--transition);
+        }
+
+        .nav-buttons button:hover {
+            transform: scale(1.05) rotate(0deg);
+            /* box-shadow: 0 0 10px var(--primary-color), 0 0 10px var(--primary-color); */
+            background: var(--secondary-gradient);
+            color: #f8f4f4;
+
+        }
+
+        .slides-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+
+        .slide {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(40px, 1fr));
+            gap: 8px;
+            width: 100%;
+            flex-shrink: 0;
+            min-width: 100%;
+        }
+
+        .nav-item {
+            padding: 5px;
+            background: linear-gradient(145deg, #111111, #1e1e1e);
+            color: var(--primary-color);
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 24px;
+            transition: var(--transition);
+            box-shadow: 0 0 25px rgba(142, 45, 226, 0.3);
+            text-shadow: 0 0 1px var(--primaryy-color), 0 0 1px var(--primaryy-color);
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--secondary-gradient);
+            color: #e71abb;
+            transform: scale(1.05);
+            font-weight: 900;
+
+        }
+
+        .carousel-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .control-btn {
+            font-size: 20px !important;
+            color: var(--primary-color);
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            box-shadow: 0 0 10px rgba(142, 45, 226, 0.3);
+            border-radius: 10px;
+        }
+
+        .control-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 480px) {
+            .transcription-button {
+                height: 80px;
+                font-size: 20px;
+                margin-bottom: 10px;
+            }
+
+            .transcription-symbol {
+                font-size: 40px;
+            }
+
+            .word {
+                font-size: 1.5em;
+            }
+
+            .transcription {
+                font-size: 1.1em;
+            }
+
+            .translation {
+                font-size: 0.9em;
+            }
+
+            .nav-buttons button {
+                font-size: 1rem;
+            }
+
+            .slide {
+                gap: 6px;
+            }
+
+            .nav-item {
+                font-size: 16px;
+            }
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: auto;
+            height: auto;
+            margin-right: 10px;
+            overflow: hidden;
+            margin-left: 10px;
+
+        }
+
+        .carousel-controls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            z-index: 10;
+            /* Поверх слайдов */
+            pointer-events: auto;
+            /* Чтобы кнопки были кликабельны */
+
+        }
+
+        .carousel-btn {
+            background: transparent;
+            color: var(--primary-color);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background: var(--primary-gradient);
+            color: #fdfcfc;
+            transform: scale(1.1);
+        }
+
+        .empty-cell,
+        .control-btn {
+            background-color: #1a1a1a !important;
+            /* Основной цвет ячеек */
+            color: #ffffff;
+            /* Цвет текста, если нужно */
+            visibility: visible;
+            /* Убираем скрытие */
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sound">
+            <button class="transcription-button" onclick="playSound(sounds[currentIndex].soundFile)"
+                id="transcriptionButton"></button>
+        </div>
+        <div class="examples-container">
+            <div class="example-section">
+                <button class="example-button" id="wordButton1" onclick="speakCurrentWord()">
+                    <span class="word" id="wordText"></span><br>
+                    <span class="transcription" id="wordTranscr"></span><br>
+                    <span class="translation" id="wordTransl"></span>
+                </button>
+                <div style="text-align: center; margin: 20px 0;">
+                    <img id="centeredImage" src="" alt="Пример изображения"
+                        style="width: 200px; height: 200px; display: none; border-radius: 15px; box-shadow: 0 0 15px rgba(153, 0, 255, 0.3), inset 0 0 10px rgba(132, 0, 255, 0.1);"
+                        onclick="nextExample()" />
+                </div>
+
+
+            </div>
+        </div>
+        <div class="carousel-wrapper">
+            <!-- Кнопки переключения слайдов -->
+            <!-- <div class="carousel-controls">
+                <button class="carousel-btn prev">&#10094;</button>
+                <button class="carousel-btn next">&#10095;</button>
+            </div> -->
+
+            <!-- Слайды с навигацией -->
+            <div class="slides-container" id="fullNav"></div>
+        </div>
+
+    </div>
+    <audio id="audioPlayer"></audio>
+    <script>
+        const sounds = [
+            {
+
+                "soundFile": "b.mp3",
+                "alphabetSoundFile": "B-b.mp3",
+                "tooltip": "близок русскому звуку [ б ], но энергичнее, с бо́льшим напряжением губ",
+                "alphabetButton": "Bb",
+                "transcriptionButton": "b",
+                "examples": [
+
+                    { "example": "bag", "letter": "b", "transcription": "[bæg]", "translation": "сумка", "image": "bag.jpg" },
+                    { "example": "baby", "letter": "b", "transcription": "['beɪbɪ]", "translation": "малыш", "image": "baby.jpg" },
+                    { "example": "bike", "letter": "b", "transcription": "[baɪk]", "translation": "велосипед", "image": "bike.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "p.mp3",
+                "alphabetSoundFile": "P-p.mp3",
+                "tooltip": "близок русскому звуку [ п ], но энергичнее и с придыханием (губы сначала смыкаются, а потом резко размыкаются сильной струей воздуха)",
+                "alphabetButton": "Pp",
+                "transcriptionButton": "p",
+                "examples": [
+                    { "example": "pen", "letter": "p", "transcription": "[pen]", "translation": "ручка", "image": "pen.jpg" },
+                    { "example": "pet", "letter": "p", "transcription": "[pet]", "translation": "питомец", "image": "pet.jpg" },
+                    { "example": "plate", "letter": "p", "transcription": "['pleɪt]", "translation": "тарелка", "image": "plate.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "v.mp3",
+                "alphabetSoundFile": "V-v.mp3",
+                "tooltip": "близок русскому звуку [ в ], но энергичнее, с бо́льшим напряжением губ",
+                "alphabetButton": "Vv",
+                "transcriptionButton": "v",
+                "examples": [
+                    { "example": "visit", "letter": "v", "transcription": "[vɪzɪt]", "translation": "визит", "image": "visit.jpg" },
+                    { "example": "van", "letter": "v", "transcription": "[væn]", "translation": "вагон", "image": "van.jpg" },
+                    { "example": "vine", "letter": "v", "transcription": "[vaɪn]", "translation": "лоза", "image": "vine.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "f.mp3",
+                "alphabetSoundFile": "f-f.mp3",
+                "tooltip": "близок русскому звуку [ ф ], но энергичнее, с бо́льшим напряжением губ",
+                "alphabetButton": "Ff",
+                "transcriptionButton": "f",
+                "examples": [
+                    { "example": "flat", "letter": "f", "transcription": "[flæt]", "translation": "квартира", "image": "flat.jpg" },
+                    { "example": "face", "letter": "f", "transcription": "[feɪs]", "translation": "лицо", "image": "face.jpg" },
+                    { "example": "five", "letter": "f", "transcription": "['faɪv]", "translation": "5 (пять)", "image": "five.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "m.mp3",
+                "alphabetSoundFile": "M-m.mp3",
+                "tooltip": "близок русскому звуку [ м ], но энергичнее, с бо́льшим напряжением губ",
+                "alphabetButton": "Mm",
+                "transcriptionButton": "m",
+                "examples": [
+                    { "example": "map", "letter": "m", "transcription": "[mæp]", "translation": "карта", "image": "map.jpg" },
+                    { "example": "mum", "letter": "m", "transcription": "[mʌm]", "translation": "мама", "image": "mum.jpg" },
+                    { "example": "milk", "letter": "m", "transcription": "['mɪlk]", "translation": "молоко", "image": "milk.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "z.mp3",
+                "alphabetSoundFile": "Z-z.mp3",
+                "tooltip": "близок русскому звуку [ з ], но более энергично, с бо́льшим напряжением языка",
+                "alphabetButton": "Zz",
+                "transcriptionButton": "z",
+                "examples": [
+                    { "example": "zip", "letter": "z", "transcription": "[zɪp]", "translation": "застежка", "image": "zip.jpg" },
+                    { "example": "zone", "letter": "z", "transcription": "[zoun]", "translation": "зона", "image": "zone.jpg" },
+                    { "example": "blaze", "letter": "z", "transcription": "[bleɪz]", "translation": "блеск", "image": "blaze.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "s.mp3",
+                "alphabetSoundFile": "S-s.mp3",
+                "tooltip": "близок русскому звуку [ с ], но более энергично, с бо́льшим напряжением языка",
+                "alphabetButton": "Ss",
+                "transcriptionButton": "s",
+                "examples": [
+                    { "example": "sand", "letter": "s", "transcription": "[sænd]", "translation": "песок", "image": "sand.jpg" },
+                    { "example": "sun", "letter": "s", "transcription": "[sʌn]", "translation": "солнце", "image": "sun.jpg" },
+                    { "example": "smile", "letter": "s", "transcription": "[smɪl]", "translation": "улыбка", "image": "smile.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "g.mp3",
+                "alphabetSoundFile": "G-g.mp3",
+                "tooltip": "близок русскому звуку [ г ], но более энергично, с бо́льшим напряжением верхней части языка",
+                "alphabetButton": "Gg",
+                "transcriptionButton": "ɡ",
+                "examples": [
+                    { "example": "game", "letter": "g", "transcription": "[ɡeɪm]", "translation": "игра", "image": "game.jpg" },
+                    { "example": "gold", "letter": "g", "transcription": "[ɡoʊld]", "translation": "золото", "image": "gold.jpg" },
+                    { "example": "gun", "letter": "g", "transcription": "[ɡʌn]", "translation": "оружие", "image": "gun.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "k.mp3",
+                "alphabetSoundFile": "K-k.mp3",
+                "tooltip": "близок русскому звуку [ к ], но более энергично и с придыханием (верхняя часть языка и нёбо смыкаются, а потом резко размыкаются сильной струей воздуха)",
+                "alphabetButton": "Kk",
+                "transcriptionButton": "k",
+                "examples": [
+                    { "example": "kiss", "letter": "k", "transcription": "[kɪs]", "translation": "поцелуй", "image": "kiss.jpg" },
+                    { "example": "kid", "letter": "k", "transcription": "[kɪd]", "translation": "ребенок", "image": "kid.jpg" },
+                    { "example": "kite", "letter": "k", "transcription": "[kaɪt]", "translation": "змей", "image": "kite.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "t.mp3",
+                "alphabetSoundFile": "T-t.mp3",
+                "tooltip": "отличается от русского звука [ т ], тем, что кончик языка приподнят, смыкается с альвеолами (бугорками верхнего нёба, расположенными за верхними зубами), а потом резко размыкается сильной струей воздуха",
+                "alphabetButton": "Tt",
+                "transcriptionButton": "t",
+                "examples": [
+                    { "example": "table", "letter": "t", "transcription": "[teɪbəl]", "translation": "стол", "image": "table.jpg" },
+                    { "example": "tube", "letter": "t", "transcription": "[tjuːb]", "translation": "труба", "image": "tube.jpg" },
+                    { "example": "top", "letter": "t", "transcription": "[tɒp]", "translation": "вершина", "image": "top.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "d.mp3",
+                "alphabetSoundFile": "D-d.mp3",
+                "tooltip": "отличается от русского звука [ д ], тем, что кончик языка приподнят и касается альвеол – бугорков верхнего нёба, расположенных за верхними зубами",
+                "alphabetButton": "Dd",
+                "transcriptionButton": "d",
+                "examples": [
+                    { "example": "desk", "letter": "d", "transcription": "[desk]", "translation": "доска", "image": "desk.jpg" },
+                    { "example": "dog", "letter": "d", "transcription": "[dɒɡ]", "translation": "собака", "image": "dog.jpg" },
+                    { "example": "dad", "letter": "d", "transcription": "[dæd]", "translation": "папа", "image": "dad.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "n.mp3",
+                "alphabetSoundFile": "N-n.mp3",
+                "tooltip": "отличается от русского звука [ н ], тем, что кончик языка приподнят и касается альвеол – бугорков верхнего нёба, расположенных за верхними зубами",
+                "alphabetButton": "Nn",
+                "transcriptionButton": "n",
+                "examples": [
+                    { "example": "name", "letter": "n", "transcription": "[neɪm]", "translation": "имя", "image": "name.jpg" },
+                    { "example": "nest", "letter": "n", "transcription": "[nest]", "translation": "гнездо", "image": "nest.jpg" },
+                    { "example": "nine", "letter": "n", "transcription": "[naɪn]", "translation": "девять (9)", "image": "nine.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "l.mp3",
+                "alphabetSoundFile": "L-l.mp3",
+                "tooltip": "отличается от русского звука [ л ], тем, что кончик языка приподнят и касается альвеол – бугорков верхнего нёба, расположенных за верхними зубами",
+                "alphabetButton": "Ll",
+                "transcriptionButton": "l",
+                "examples": [
+                    { "example": "lips", "letter": "l", "transcription": "[lɪps]", "translation": "губы", "image": "lips.jpg" },
+                    { "example": "lamp", "letter": "l", "transcription": "[læmp]", "translation": "лампа", "image": "lamp.jpg" },
+                    { "example": "lake", "letter": "l", "transcription": "[leɪk]", "translation": "озеро", "image": "lake.jpg" }
+                ]
+            },
+            {
+                "soundFile": "dj.mp3",
+                "alphabetSoundFile": "J-j.mp3",
+                "tooltip": "русский звук [ дж ], [ ж ] - мягче",
+                "alphabetButton": "Jj",
+                "transcriptionButton": "dʒ",
+                "examples": [
+                    { "example": "joy", "letter": "j", "transcription": "[dʒɔɪ]", "translation": "радость", "image": "joy.jpg" },
+                    { "example": "job", "letter": "j", "transcription": "[dʒɒb]", "translation": "работа", "image": "job.jpg" },
+                    { "example": "jump", "letter": "j", "transcription": "[dʒʌmp]", "translation": "прыжек", "image": "jump.jpg" },
+                    { "example": "gym", "letter": "g", "transcription": "[dʒɪm]", "translation": "тренажерный зал", "image": "gym.jpg" },
+                    { "example": "general", "letter": "g", "transcription": "[ˈdʒenərəl]", "translation": "генерал", "image": "general.jpg" },
+                    { "example": "gel", "letter": "g", "transcription": "[dʒel]", "translation": "гель", "image": "gel.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "jj.mp3",
+                "alphabetSoundFile": "Y-y.mp3",
+                "tooltip": "русский звук [ й ]",
+                "alphabetButton": "Yy",
+                "transcriptionButton": "j",
+                "examples": [
+                    // { "example": "tube", "letter": "u", "transcription": "[tjuːb]", "translation": "труба", "image": "tube.jpg" },
+                    // { "example": "music", "letter": "u", "transcription": "[ˈmjuːzɪk]", "translation": "музыка", "image": "music.jpg" },
+                    // { "example": "cute", "letter": "u", "transcription": "[kjuːt]", "translation": "милый", "image": "cute.jpg" },
+                    { "example": "yellow", "letter": "y", "transcription": "[ˈjeləʊ]", "translation": "желтый", "image": "yellow.jpg" },
+                    { "example": "yes", "letter": "y", "transcription": "[jes]", "translation": "да", "image": "yes.gif" },
+                    { "example": "you", "letter": "y", "transcription": "[juː]", "translation": "ты", "image": "you.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "h.mp3",
+                "alphabetSoundFile": "H-h.mp3",
+                "tooltip": "близок русскому звуку [ х ], но почти беззвучен, как легкий выдох",
+                "alphabetButton": "Hh",
+                "transcriptionButton": "h",
+                "examples": [
+                    { "example": "hand", "letter": "h", "transcription": "[hænd]", "translation": "рука", "image": "hand.jpg" },
+                    { "example": "home", "letter": "h", "transcription": "[hoʊm]", "translation": "дом", "image": "home.jpg" },
+                    { "example": "hat", "letter": "h", "transcription": "[hæt]", "translation": "шапка", "image": "hat.jpg" },
+                    { "example": "house", "letter": "h", "transcription": "[haʊs]", "translation": "дом", "image": "house.jpg" },
+                    { "example": "hair", "letter": "h", "transcription": "[heər]", "translation": "волосы", "image": "hair.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "w.mp3",
+                "alphabetSoundFile": "W-w.mp3",
+                "tooltip": "губы округлены и слегка вытянуты вперед, как перед произнесением русского [ у ], а затем быстро и энергично произносится следующий гласный звук в слове после [ w ]",
+                "alphabetButton": "Ww",
+                "transcriptionButton": "w",
+                "examples": [
+                    { "example": "wine", "letter": "w", "transcription": "[waɪn]", "translation": "вино", "image": "wine.jpg" },
+                    { "example": "we", "letter": "w", "transcription": "[wiː]", "translation": "мы", "image": "we.jpg" },
+                    { "example": "way", "letter": "w", "transcription": "[weɪ]", "translation": "путь", "image": "way.jpg" },
+                    { "example": "quest", "letter": "w", "transcription": "[kwest]", "translation": "поиск", "image": "quest.jpg" },
+                    { "example": "queen", "letter": "w", "transcription": "[kwiːn]", "translation": "королева", "image": "queen.jpg" },
+                    { "example": "squirrel", "letter": "w", "transcription": "[ˈskwɪrəl]", "translation": "белка", "image": "squirrel.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "r.mp3",
+                "alphabetSoundFile": "R-r.mp3",
+                "tooltip": "отличается от русского звука [ р ] тем, что лишен вибрации, а кончик языка заострен, поднят к нёбу, не касается его и остается неподвижным",
+                "alphabetButton": "Rr",
+                "transcriptionButton": "r",
+                "examples": [
+                    { "example": "general", "letter": "r", "transcription": "[ˈdʒenərəl]", "translation": "генерал", "image": "general.jpg" },
+                    { "example": "rabbit", "letter": "r", "transcription": "[ˈræbɪt]", "translation": "кролик", "image": "rabbit.jpg" },
+                    { "example": "rose", "letter": "r", "transcription": "[roʊz]", "translation": "роза", "image": "rose.jpg" },
+                    { "example": "red", "letter": "r", "transcription": "[red]", "translation": "красный", "image": "red.jpg" },
+                    { "example": "squirrel", "letter": "r", "transcription": "[ˈskwɪrəl]", "translation": "белка", "image": "squirrel.jpg" },
+                    { "example": "cherry", "letter": "r", "transcription": "[ˈtʃeri]", "translation": "вишня", "image": "cherry.jpg" },
+                    { "example": "ring", "letter": "r", "transcription": "[rɪŋ]", "translation": "кольцо", "image": "ring.jpg" },
+                    { "example": "driver", "letter": "r", "transcription": "[ˈdraɪvər]", "translation": "водитель", "image": "driver.jpg" },
+                    { "example": "room", "letter": "r", "transcription": "[ruːm]", "translation": "комната", "image": "room.jpg" },
+                    { "example": "tree", "letter": "r", "transcription": "[triː]", "translation": "дерево", "image": "tree.jpg" },
+                    { "example": "crown", "letter": "r", "transcription": "[kraʊn]", "translation": "корона", "image": "crown.jpg" },
+                    { "example": "brown", "letter": "r", "transcription": "[braʊn]", "translation": "коричневый", "image": "brown.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ei.mp3",
+                "alphabetSoundFile": "A-a.mp3",
+                "tooltip": "близок русскому звуку [ эй ]",
+                "alphabetButton": "Aa",
+                "transcriptionButton": "eɪ",
+                "examples": [
+                    { "example": "lake", "letter": "a", "transcription": "[leɪk]", "translation": "озеро", "image": "lake.jpg" },
+                    { "example": "game", "letter": "a", "transcription": "[ɡeɪm]", "translation": "игра", "image": "game.jpg" },
+                    { "example": "blaze", "letter": "a", "transcription": "[bleɪz]", "translation": "блеск", "image": "blaze.jpg" },
+                    { "example": "face", "letter": "a", "transcription": "[feɪs]", "translation": "лицо", "image": "face.jpg" },
+                    { "example": "plate", "letter": "a", "transcription": "[pleɪt]", "translation": "тарелка", "image": "plate.jpg" },
+                    { "example": "baby", "letter": "a", "transcription": "[ˈbeɪbɪ]", "translation": "малыш", "image": "baby.jpg" },
+                    { "example": "table", "letter": "a", "transcription": "[ˈteɪbəl]", "translation": "стол", "image": "table.jpg" },
+                    { "example": "baking", "letter": "a", "transcription": "[ˈbeɪkɪŋ]", "translation": "выпечка", "image": "baking.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ae.mp3",
+                "alphabetSoundFile": "A-a.mp3",
+                "tooltip": "между русскими звуками [ а ] и [ э ], нижняя челюсть значительно опущена, губы растянуты, кончик языка находится у основания нижних зубов",
+                "alphabetButton": "Aa",
+                "transcriptionButton": "æ",
+                "examples": [
+                    { "example": "sand", "letter": "a", "transcription": "[sænd]", "translation": "песок", "image": "sand.jpg" },
+                    { "example": "flat", "letter": "a", "transcription": "[flæt]", "translation": "квартира", "image": "flat.jpg" },
+                    { "example": "bag", "letter": "a", "transcription": "[bæɡ]", "translation": "сумка", "image": "bag.jpg" },
+                    { "example": "fantasy", "letter": "a", "transcription": "[ˈfæntəsi]", "translation": "фантазия", "image": "fantasy.jpg" },
+                    { "example": "cat", "letter": "a", "transcription": "[kæt]", "translation": "кот", "image": "cat.jpg" },
+                    { "example": "examine", "letter": "a", "transcription": "[ɪɡˈzæmɪn]", "translation": "экзамен", "image": "examine.jpg" },
+                    { "example": "example", "letter": "a", "transcription": "[ɪɡˈzæmpəl]", "translation": "пример", "image": "example.jpg" },
+                    { "example": "van", "letter": "a", "transcription": "[væn]", "translation": "вагон", "image": "van.jpg" },
+                    { "example": "map", "letter": "a", "transcription": "[mæp]", "translation": "карта", "image": "map.jpg" },
+                    { "example": "hand", "letter": "a", "transcription": "[hænd]", "translation": "рука", "image": "hand.jpg" },
+                    { "example": "hat", "letter": "a", "transcription": "[hæt]", "translation": "шапка", "image": "hat.jpg" },
+                    { "example": "rabbit", "letter": "a", "transcription": "[ˈræbɪt]", "translation": "кролик", "image": "rabbit.jpg" },
+                    { "example": "that", "letter": "a", "transcription": "[ðæt]", "translation": "то", "image": "that.jpg" },
+                    { "example": "alphabet", "letter": "a", "transcription": "[ˈælfəbet]", "translation": "алфавит", "image": "alphabet.jpg" },
+                    { "example": "bamboo", "letter": "a", "transcription": "[ˌbæmˈbuː]", "translation": "бамбук", "image": "bamboo.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ii.mp3",
+                "alphabetSoundFile": "E-e.mp3",
+                "tooltip": "длительный звук, средний между [ и ] и [ ы ]",
+                "alphabetButton": "Ee",
+                "transcriptionButton": "iː",
+                "examples": [
+                    { "example": "green", "letter": "ee", "transcription": "[ɡriːn]", "translation": "зеленый", "image": "green.jpg" },
+                    { "example": "cheese", "letter": "ee:", "transcription": "[tʃiːz]", "translation": "сыр", "image": "cheese.jpg" },
+                    { "example": "tree", "letter": "ee", "transcription": "[triː]", "translation": "дерево", "image": "tree.jpg" },
+                    { "example": "tea", "letter": "ea", "transcription": "[tiː]", "translation": "чай", "image": "tea.jpg" },
+                    { "example": "sea", "letter": "ea", "transcription": "[siː]", "translation": "море", "image": "sea.jpg" },
+                    { "example": "please", "letter": "ea", "transcription": "[pliːz]", "translation": "пожалуйста", "image": "please.jpg" },
+                    { "example": "we", "letter": "e", "transcription": "[wiː]", "translation": "мы", "image": "we.jpg" },
+                    { "example": "me", "letter": "e", "transcription": "[miː]", "translation": "я", "image": "me.jpg" },
+                    { "example": "be", "letter": "e", "transcription": "[biː]", "translation": "быть", "image": "be.jpg" },
+                    { "example": "leo", "letter": "e", "transcription": "[ˈliːoʊ]", "translation": "лев", "image": "leo.jpg" },
+                    { "example": "she", "letter": "e", "transcription": "[ʃiː]", "translation": "она", "image": "she.jpg" },
+                    { "example": "queen", "letter": "ee", "transcription": "[kwiːn]", "translation": "королева", "image": "queen.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "e.mp3",
+                "alphabetSoundFile": "E-e.mp3",
+                "tooltip": "близок русскому звуку [ э ], но губы слегка растянуты, кончик языка касается нижних зубов",
+                "alphabetButton": "Ee",
+                "transcriptionButton": "e",
+                "examples": [
+                    { "example": "legs", "letter": "e", "transcription": "[leɡz]", "translation": "ноги", "image": "legs.jpg" },
+                    { "example": "nest", "letter": "e", "transcription": "[nest]", "translation": "гнездо", "image": "nest.jpg" },
+                    { "example": "desk", "letter": "e", "transcription": "[desk]", "translation": "доска", "image": "desk.jpg" },
+                    { "example": "enemy", "letter": "e", "transcription": "[ˈenəmi]", "translation": "враг", "image": "enemy.jpg" },
+                    { "example": "cell", "letter": "e", "transcription": "[sel]", "translation": "сот", "image": "cell.jpg" },
+                    { "example": "general", "letter": "e", "transcription": "[ˈdʒenərəl]", "translation": "генерал", "image": "general.jpg" },
+                    { "example": "gel", "letter": "e", "transcription": "[dʒel]", "translation": "гель", "image": "gel.jpg" },
+                    { "example": "exit", "letter": "e", "transcription": "[ˈeksɪt]", "translation": "выход", "image": "exit.jpg" },
+                    { "example": "sex", "letter": "e", "transcription": "[seks]", "translation": "пол", "image": "sex.jpg" },
+                    { "example": "examine", "letter": "e", "transcription": "[ɪɡˈzæmɪn]", "translation": "экзамен", "image": "examine.jpg" },
+                    { "example": "pen", "letter": "e", "transcription": "[pen]", "translation": "ручка", "image": "pen.jpg" },
+                    { "example": "pet", "letter": "e", "transcription": "[pet]", "translation": "питомец", "image": "pet.jpg" },
+                    { "example": "red", "letter": "e", "transcription": "[red]", "translation": "красный", "image": "red.jpg" },
+                    { "example": "yellow", "letter": "e", "transcription": "[ˈjeləʊ]", "translation": "желтый", "image": "yellow.jpg" },
+                    { "example": "yes", "letter": "e", "transcription": "[jes]", "translation": "да", "image": "yes.jpg" },
+                    { "example": "bench", "letter": "e", "transcription": "[bentʃ]", "translation": "лавочка", "image": "bench.jpg" },
+                    { "example": "cherry", "letter": "e", "transcription": "[ˈtʃeri]", "translation": "вишня", "image": "cherry.jpg" },
+                    { "example": "alphabet", "letter": "e", "transcription": "[ˈælfəbet]", "translation": "алфавит", "image": "alphabet.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ai.mp3",
+                "alphabetSoundFile": "I-i.mp3",
+                "tooltip": "близок русскому звуку [ ай ]",
+                "alphabetButton": "Ii",
+                "transcriptionButton": "aɪ",
+                "examples": [
+                    { "example": "bike", "letter": "i", "transcription": "[baɪk]", "translation": "велосипед", "image": "bike.jpg" },
+                    { "example": "five", "letter": "i", "transcription": "[faɪv]", "translation": "5", "image": "five.jpg" },
+                    { "example": "smile", "letter": "i", "transcription": "[smaɪl]", "translation": "улыбка", "image": "smile.jpg" },
+                    { "example": "my", "letter": "y", "transcription": "[maɪ]", "translation": "мое", "image": "my.jpg" },
+                    { "example": "fly", "letter": "y", "transcription": "[flaɪ]", "translation": "муха", "image": "fly.jpg" },
+                    { "example": "sky", "letter": "y", "transcription": "[skaɪ]", "translation": "небо", "image": "sky.jpg" },
+                    { "example": "mice", "letter": "i", "transcription": "[maɪs]", "translation": "мыши", "image": "mice.jpg" },
+                    { "example": "vine", "letter": "i", "transcription": "[vaɪn]", "translation": "лоза", "image": "vine.jpg" },
+                    { "example": "kite", "letter": "i", "transcription": "[kaɪt]", "translation": "змей", "image": "kite.jpg" },
+                    { "example": "wine", "letter": "i", "transcription": "[waɪn]", "translation": "вино", "image": "wine.jpg" },
+                    { "example": "child", "letter": "i", "transcription": "[tʃaɪld]", "translation": "ребенок", "image": "child.jpg" },
+                    { "example": "driver", "letter": "i", "transcription": "[ˈdraɪvər]", "translation": "водитель", "image": "driver.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "i.mp3",
+                "alphabetSoundFile": "I-i.mp3",
+                "tooltip": "средний звук между русскими звуками [ и ] и [ ы ]",
+                "alphabetButton": "Ii",
+                "transcriptionButton": "ɪ",
+                "examples": [
+                    { "example": "pillow", "letter": "i", "transcription": "[ˈpɪloʊ]", "translation": "подушка", "image": "pillow.jpg" },
+                    { "example": "kid", "letter": "i", "transcription": "[kɪd]", "translation": "ребенок", "image": "kid.jpg" },
+                    { "example": "zip", "letter": "i", "transcription": "[zɪp]", "translation": "застежка", "image": "zip.jpg" },
+                    { "example": "pig", "letter": "i", "transcription": "[pɪɡ]", "translation": "свинка", "image": "pig.jpg" },
+                    { "example": "music", "letter": "i", "transcription": "[ˈmjuːzɪk]", "translation": "музыка", "image": "music.jpg" },
+                    { "example": "gym", "letter": "y", "transcription": "[dʒɪm]", "translation": "тренажерный зал", "image": "gym.jpg" },
+                    { "example": "exit", "letter": "i", "transcription": "[ˈeksɪt]", "translation": "выход", "image": "exit.jpg" },
+                    // { "example": "examine", "letter": "i", "transcription": "[ɪɡˈzæmɪn]", "translation": "экзамен", "image": "examine.jpg" },
+                    // { "example": "example", "letter": "e", "transcription": "[ɪɡˈzæmpəl]", "translation": "пример", "image": "example.jpg" },
+                    { "example": "milk", "letter": "i", "transcription": "[mɪlk]", "translation": "молоко", "image": "milk.jpg" },
+                    { "example": "kiss", "letter": "i", "transcription": "[kɪs]", "translation": "поцелуй", "image": "kiss.jpg" },
+                    { "example": "rabbit", "letter": "i", "transcription": "[ˈræbɪt]", "translation": "кролик", "image": "rabbit.jpg" },
+                    { "example": "squirrel", "letter": "i", "transcription": "[ˈskwɪrəl]", "translation": "белка", "image": "squirrel.jpg" },
+                    { "example": "fish", "letter": "i", "transcription": "[fɪʃ]", "translation": "рыба", "image": "fish.jpg" },
+                    { "example": "thin", "letter": "i", "transcription": "[θɪn]", "translation": "тонкий", "image": "thin.jpg" },
+                    { "example": "smith", "letter": "i", "transcription": "[smɪθ]", "translation": "кузнец", "image": "smith.jpg" },
+                    { "example": "this", "letter": "i", "transcription": "[ðɪs]", "translation": "это", "image": "this.jpg" },
+                    { "example": "ring", "letter": "i", "transcription": "[rɪŋ]", "translation": "кольцо", "image": "ring.jpg" },
+                    { "example": "king", "letter": "i", "transcription": "[kɪŋ]", "translation": "король", "image": "king.jpg" },
+                    { "example": "baking", "letter": "i", "transcription": "[ˈbeɪkɪŋ]", "translation": "выпечка", "image": "baking.jpg" },
+                    { "example": "vision", "letter": "i", "transcription": "[vɪʒn]", "translation": "зрение", "image": "vision.jpg" },
+                    { "example": "collision", "letter": "i", "transcription": "[kəˈlɪʒn]", "translation": "столкновение", "image": "collision.jpg" },
+                    { "example": "division", "letter": "i", "transcription": "[dɪˈvɪʒn]", "translation": "подразделение", "image": "division.jpg" },
+                    { "example": "cigar", "letter": "i", "transcription": "[sɪˈɡɑːr]", "translation": "сигара", "image": "cigar.jpg" },
+                    { "example": "sister", "letter": "i", "transcription": "[ˈsɪstər]", "translation": "сестра", "image": "sister.jpg" },
+                    { "example": "finger", "letter": "i", "transcription": "[ˈfɪŋɡər]", "translation": "палец", "image": "finger.jpg" },
+                    { "example": "morning", "letter": "i", "transcription": "[ˈmɔːrnɪŋ]", "translation": "утро", "image": "morning.jpg" },
+                    { "example": "pillow", "letter": "i", "transcription": "[ˈpɪloʊ]", "translation": "подушка", "image": "pillow.jpg" },
+                    { "example": "lily", "letter": "i", "transcription": "[ˈlɪli]", "translation": "лилия", "image": "lily.jpg" },
+                    { "example": "fantasy", "letter": "i", "transcription": "[ˈfæntəsi]", "translation": "фантазия", "image": "fantasy.jpg" },
+                    { "example": "enemy", "letter": "i", "transcription": "[ˈenəmi]", "translation": "враг", "image": "enemy.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ou.mp3",
+                "alphabetSoundFile": "O-o.mp3",
+                "tooltip": "близок русскому звуку [ оу ] протяжно и с ударением на первом звуке",
+                "alphabetButton": "Oo",
+                "transcriptionButton": "əʊ",
+                "examples": [
+                    { "example": "leo", "letter": "o", "transcription": "[ˈliːəʊ]", "translation": "лев", "image": "leo.jpg" },
+                    { "example": "note", "letter": "o", "transcription": "[nəʊt]", "translation": "нота", "image": "note.jpg" },
+                    { "example": "nose", "letter": "o", "transcription": "[nəʊz]", "translation": "нос", "image": "nose.jpg" },
+                    { "example": "smoke", "letter": "o", "transcription": "[sməʊk]", "translation": "дым", "image": "smoke.jpg" },
+                    { "example": "pose", "letter": "o", "transcription": "[pəʊz]", "translation": "поза", "image": "pose.jpg" },
+                    { "example": "gold", "letter": "o", "transcription": "[ɡəʊld]", "translation": "золото", "image": "gold.jpg" },
+                    { "example": "zone", "letter": "o", "transcription": "[zəʊn]", "translation": "зона", "image": "zone.jpg" },
+                    { "example": "home", "letter": "o", "transcription": "[həʊm]", "translation": "дом", "image": "home.jpg" },
+                    { "example": "rose", "letter": "o", "transcription": "[rəʊz]", "translation": "роза", "image": "rose.jpg" },
+                    { "example": "photo", "letter": "o", "transcription": "[ˈfəʊtoʊ]", "translation": "фото", "image": "photo.jpg" },
+                    { "example": "phone", "letter": "o", "transcription": "[fəʊn]", "translation": "телефон", "image": "phone.jpg" },
+                    { "example": "snow", "letter": "ow", "transcription": "[snəʊ]", "translation": "снег", "image": "snow.jpg" },
+                    { "example": "pillow", "letter": "ow", "transcription": "[ˈpɪləʊ]", "translation": "подушка", "image": "pillow.jpg" },
+                    { "example": "flow", "letter": "ow", "transcription": "[fləʊ]", "translation": "поток", "image": "flow.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "o.mp3",
+                "alphabetSoundFile": "O-o.mp3",
+                "tooltip": "краткий русский звук [ о ] с оттенком [ а ]",
+                "alphabetButton": "Oo",
+                "transcriptionButton": "ɒ",
+                "examples": [
+                    { "example": "dog", "letter": "o", "transcription": "[dɒɡ]", "translation": "пес", "image": "dog.jpg" },
+                    { "example": "pot", "letter": "o", "transcription": "[pɒt]", "translation": "горшок", "image": "pot.jpg" },
+                    { "example": "top", "letter": "o", "transcription": "[tɒp]", "translation": "вершина", "image": "top.jpg" },
+                    { "example": "shop", "letter": "o", "transcription": "[ʃɒp]", "translation": "магазин", "image": "shop.jpg" },
+                    { "example": "fox", "letter": "o", "transcription": "/fɒks/", "translation": "лиса", "image": "fox.jpg" },
+                    { "example": "moth", "letter": "o", "transcription": "/mɒθ/", "translation": "мотылек", "image": "moth.jpg" },
+                    { "example": "job", "letter": "o", "transcription": "[dʒɒb]", "translation": "работа", "image": "job.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "oo2.mp3",
+                "alphabetSoundFile": "U-u.mp3",
+                "tooltip": "закрытый долгий русский звук [у], но губы не вытянуты и не сужены",
+                "alphabetButton": "oo",
+                "transcriptionButton": "uː",
+                "examples": [
+                    { "example": "tube", "letter": "u", "transcription": "[tjuːb]", "translation": "труба", "image": "tube.jpg" },
+                    { "example": "duty", "letter": "u", "transcription": "[ˈduːti]", "translation": "долг", "image": "duty.jpg" },
+                    { "example": "music", "letter": "u", "transcription": "[ˈmjuːzɪk]", "translation": "музыка", "image": "music.jpg" },
+                    { "example": "cute", "letter": "u", "transcription": "[kjuːt]", "translation": "милый", "image": "cute.jpg" },
+                    // { "example": "you", "letter": "u", "transcription": "[juː]", "translation": "ты", "image": "you.jpg" },
+                    { "example": "room", "letter": "oo", "transcription": "[ruːm]", "translation": "комната", "image": "room.jpg" },
+                    { "example": "moon", "letter": "oo", "transcription": "[muːn]", "translation": "луна", "image": "moon.jpg" },
+                    { "example": "spoon", "letter": "oo", "transcription": "[spuːn]", "translation": "ложка", "image": "spoon.jpg" },
+                    { "example": "bamboo", "letter": "oo", "transcription": "[ˌbæmˈbuː]", "translation": "бамбук", "image": "bamboo.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "a.mp3",
+                "alphabetSoundFile": "U-u.mp3",
+                "tooltip": "очень краткое [ а ]",
+                "alphabetButton": "Uu",
+                "transcriptionButton": "ʌ",
+                "examples": [
+                    { "example": "sun", "letter": "u", "transcription": "[sʌn]", "translation": "солнце", "image": "sun.jpg" },
+                    { "example": "gun", "letter": "u", "transcription": "[ɡʌn]", "translation": "оружие", "image": "gun.jpg" },
+                    { "example": "bus", "letter": "u", "transcription": "[bʌs]", "translation": "автобус", "image": "bus.jpg" },
+                    { "example": "mum", "letter": "u", "transcription": "[mʌm]", "translation": "мама", "image": "mum.jpg" },
+                    { "example": "jump", "letter": "u", "transcription": "[dʒʌmp]", "translation": "прыжек", "image": "jump.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "sh.mp3",
+                "alphabetButton": "sh",
+                "transcriptionButton": "ʃ",
+                "tooltip": "глухой мягкий русский звук [ш]",
+                "examples": [
+                    { "example": "shop", "letter": "sh", "transcription": "[ʃɒp]", "translation": "магазин", "image": "shop.jpg" },
+                    { "example": "she", "letter": "sh", "transcription": "[ʃiː]", "translation": "она", "image": "she.jpg" },
+                    { "example": "fish", "letter": "sh", "transcription": "[fɪʃ]", "translation": "рыба", "image": "fish.jpg" },
+                    { "example": "sure", "letter": "sh", "transcription": "[ʃʊər]", "translation": "уверенный", "image": "sure.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ch.mp3",
+                "alphabetButton": "ch",
+                "transcriptionButton": "tʃ",
+                "tooltip": "русский звук [ч]",
+                "examples": [
+                    { "example": "child", "letter": "ch", "transcription": "[tʃaɪld]", "translation": "ребенок", "image": "child.jpg" },
+                    { "example": "bench", "letter": "ch", "transcription": "[bentʃ]", "translation": "лавочка", "image": "bench.jpg" },
+                    { "example": "cherry", "letter": "ch", "transcription": "[ˈtʃeri]", "translation": "вишня", "image": "cherry.jpg" },
+                    { "example": "cheese", "letter": "ch", "transcription": "[tʃiːz]", "translation": "сыр", "image": "cheese.jpg" },
+                    { "example": "chair", "letter": "ch", "transcription": "[tʃeər]", "translation": "стул", "image": "chair.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "th1.mp3",
+                "alphabetButton": "th",
+                "transcriptionButton": "θ",
+                "tooltip": "глухой звук отличный от русского [с] тем, что образуется струей воздуха, проходящей между кончиком языка, находящимся между зубами при слегка выдвинутой нижней челюсти",
+                "examples": [
+                    { "example": "thin", "letter": "th", "transcription": "[θɪn]", "translation": "тонкий", "image": "thin.jpg" },
+                    { "example": "moth", "letter": "th", "transcription": "[mɒθ]", "translation": "мотылек", "image": "moth.jpg" },
+                    { "example": "smith", "letter": "th", "transcription": "[smɪθ]", "translation": "кузнец", "image": "smith.jpg" },
+                    { "example": "north", "letter": "th", "transcription": "[nɔːrθ]", "translation": "север", "image": "north.jpg" },
+                    { "example": "mouth", "letter": "th", "transcription": "[maʊθ]", "translation": "рот", "image": "mouth.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "th2.mp3",
+                "alphabetButton": "th",
+                "transcriptionButton": "ð",
+                "tooltip": "звонкий звук отличный от русского [з] тем, что образуется струей воздуха, проходящей между кончиком языка, находящимся между зубами при слегка выдвинутой нижней челюсти",
+                "examples": [
+                    { "example": "this", "letter": "th", "transcription": "[ðɪs]", "translation": "это", "image": "this.jpg" },
+                    { "example": "that", "letter": "th", "transcription": "[ðæt]", "translation": "то", "image": "that.jpg" },
+                    { "example": "they", "letter": "th", "transcription": "[ðeɪ]", "translation": "они", "image": "they.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ng.mp3",
+                "alphabetButton": "ng",
+                "transcriptionButton": "ŋ",
+                "tooltip": "носовой звук [н] – задняя часть языка поднята к опущенному мягкому нёбу, и струя воздуха протяжно проходит через полость носа",
+                "examples": [
+                    { "example": "ring", "letter": "ng", "transcription": "[rɪŋ]", "translation": "кольцо", "image": "ring.jpg" },
+                    { "example": "king", "letter": "ng", "transcription": "[kɪŋ]", "translation": "король", "image": "king.jpg" },
+                    { "example": "baking", "letter": "ng", "transcription": "[ˈbeɪkɪŋ]", "translation": "выпечка", "image": "baking.jpg" },
+                    { "example": "finger", "letter": "ng", "transcription": "[ˈfɪŋɡər]", "translation": "палец", "image": "finger.jpg" },
+                    { "example": "morning", "letter": "ng", "transcription": "[ˈmɔːrnɪŋ]", "translation": "утро", "image": "morning.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "zch.mp3",
+                "alphabetButton": "sio",
+                "transcriptionButton": "ʒ",
+                "tooltip": "звонкий мягкий русский [ж]",
+                "examples": [
+                    { "example": "vision", "letter": "sio", "transcription": "[vɪʒn]", "translation": "зрение", "image": "vision.jpg" },
+                    { "example": "collision", "letter": "sio", "transcription": "[kɒlɪʒn]", "translation": "столкновение", "image": "collision.jpg" },
+                    { "example": "division", "letter": "sio", "transcription": "[dɪvɪʒn]", "translation": "подразделение", "image": "division.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ar.mp3",
+                "alphabetButton": "ar",
+                "transcriptionButton": "ɑ:",
+                "tooltip": "открытый долгий звук [а]",
+                "examples": [
+                    { "example": "car", "letter": "ar", "transcription": "[kɑ:r]", "translation": "автомобиль", "image": "car.jpg" },
+                    { "example": "star", "letter": "ar", "transcription": "[stɑ:r]", "translation": "звезда", "image": "star.jpg" },
+                    { "example": "cigar", "letter": "ar", "transcription": "[sɪˈɡɑ:r]", "translation": "сигара", "image": "cigar.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "er.mp3",
+                "alphabetButton": "er",
+                "transcriptionButton": "ə",
+                "tooltip": "неясный, короткий безударный звук между [а] и [э]",
+                "examples": [
+                    { "example": "sister", "letter": "er", "transcription": "[sɪstə]", "translation": "сестра", "image": "sister.jpg" },
+                    { "example": "finger", "letter": "er", "transcription": "[fɪŋgə]", "translation": "палец", "image": "finger.jpg" },
+                    { "example": "driver", "letter": "er", "transcription": "[draɪvə]", "translation": "водитель", "image": "driver.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "or.mp3",
+                "alphabetButton": "or",
+                "transcriptionButton": "ɔː",
+                "tooltip": "долгий открытый протяжный звук [о], но язык опущен и оттянут назад и губы не округлены и не вытянуты",
+                "examples": [
+                    { "example": "sport", "letter": "or", "transcription": "[spɔːt]", "translation": "спорт", "image": "sport.jpg" },
+                    { "example": "morning", "letter": "or", "transcription": "[mɔːnɪŋ]", "translation": "утро", "image": "morning.jpg" },
+                    { "example": "north", "letter": "or", "transcription": "[nɔːθ]", "translation": "север", "image": "north.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ir.mp3",
+                "alphabetButton": "ir",
+                "transcriptionButton": "ɜː",
+                "tooltip": "произносится изнутри с полузакрытым ртом средний между русскими звуками [о] и [э]",
+                "examples": [
+                    { "example": "girl", "letter": "ir", "transcription": "[ɡɜːl]", "translation": "девушка", "image": "girl.jpg" },
+                    { "example": "bird", "letter": "ir", "transcription": "[bɜːd]", "translation": "птица", "image": "bird.jpg" },
+                    { "example": "skirt", "letter": "ir", "transcription": "[skɜːt]", "translation": "платье", "image": "skirt.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "oo1.mp3",
+                "alphabetButton": "oo",
+                "transcriptionButton": "ʊ",
+                "tooltip": "краткий русский звук [у]",
+                "examples": [
+                    { "example": "book", "letter": "oo", "transcription": "[bʊk]", "translation": "книга", "image": "book.jpg" },
+                    { "example": "look", "letter": "oo", "transcription": "[lʊk]", "translation": "взгляд", "image": "look.jpg" },
+                    { "example": "foot", "letter": "oo", "transcription": "[fʊt]", "translation": "ступня", "image": "foot.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "oi.mp3",
+                "alphabetButton": "oi",
+                "transcriptionButton": "ɔɪ",
+                "tooltip": "близок русскому звуку [ой] с ударением на первом звуке",
+                "examples": [
+                    { "example": "coin", "letter": "oi", "transcription": "[kɔɪn]", "translation": "монета", "image": "coin.jpg" },
+                    { "example": "voice", "letter": "oi", "transcription": "[vɔɪs]", "translation": "голос", "image": "voice.jpg" },
+                    { "example": "oil", "letter": "oi", "transcription": "[ɔɪl]", "translation": "масло", "image": "oil.jpg" },
+                    { "example": "boy", "letter": "oy", "transcription": "[bɔɪ]", "translation": "мальчик", "image": "boy.jpg" },
+                    { "example": "toy", "letter": "oy", "transcription": "[tɔɪ]", "translation": "игрушка", "image": "toy.jpg" },
+                    { "example": "joy", "letter": "oy", "transcription": "[dʒɔɪ]", "translation": "радость", "image": "joy.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "au.mp3",
+                "alphabetButton": "ou",
+                "transcriptionButton": "aʊ",
+                "tooltip": "близок русскому звуку [ау], протяжно и с ударением на первом звуке",
+                "examples": [
+                    { "example": "mouth", "letter": "ou", "transcription": "[maʊθ]", "translation": "рот", "image": "mouth.jpg" },
+                    { "example": "cloud", "letter": "ou", "transcription": "[klaʊd]", "translation": "облако", "image": "cloud.jpg" },
+                    { "example": "house", "letter": "ou", "transcription": "[haʊs]", "translation": "дом", "image": "house.jpg" },
+                    { "example": "town", "letter": "ow", "transcription": "[taʊn]", "translation": "город", "image": "town.jpg" },
+                    { "example": "crown", "letter": "ow", "transcription": "[kraʊn]", "translation": "корона", "image": "crown.jpg" },
+                    { "example": "brown", "letter": "ow", "transcription": "[braʊn]", "translation": "коричневый", "image": "brown.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ear.mp3",
+                "alphabetButton": "ear",
+                "transcriptionButton": "ɪə",
+                "tooltip": "сочетание английских звуков [ɪ] и [ə] c ударением на [ə], близкое к русскому [иэ]",
+                "examples": [
+                    { "example": "ear", "letter": "ear", "transcription": "[ɪə]", "translation": "ухо", "image": "ear.jpg" },
+                    { "example": "fear", "letter": "ear", "transcription": "[fɪə]", "translation": "страх", "image": "fear.jpg" },
+                    { "example": "year", "letter": "ear", "transcription": "[jɪə]", "translation": "год", "image": "year.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "ure.mp3",
+                "alphabetButton": "ure",
+                "transcriptionButton": "ʊə",
+                "tooltip": "сочетание английских звуков [ʊ] и [ə] c ударением на [ʊ], близкое к русскому [уэ]",
+                "examples": [
+                    { "example": "cure", "letter": "ure", "transcription": "[kjʊə]", "translation": "лечение", "image": "cure.jpg" },
+                    { "example": "pure", "letter": "ure", "transcription": "[pjʊə]", "translation": "беспримесный", "image": "pure.jpg" },
+                    { "example": "sure", "letter": "ure", "transcription": "[ʃʊə]", "translation": "уверенный", "image": "sure.jpg" }
+                ]
+            },
+            {
+
+                "soundFile": "air.mp3",
+                "alphabetButton": "air",
+                "transcriptionButton": "eə",
+                "tooltip": "сочетание английских звуков [e] и [ə] c оттенком [ʌ], близкое к русскому [эа], с ударением на первом звуке",
+                "examples": [
+                    { "example": "air", "letter": "air", "transcription": "[eə]", "translation": "воздух", "image": "air.jpg" },
+                    { "example": "chair", "letter": "air", "transcription": "[tʃeə]", "translation": "стул", "image": "chair.jpg" },
+                    { "example": "hair", "letter": "air", "transcription": "[heə]", "translation": "волосы", "image": "hair.jpg" }
+                ]
+            }
+        ];
+        let currentIndex = 0;
+        let currentExampleIndex = 0;
+
+        function updateContent() {
+            const current = sounds[currentIndex];
+            document.getElementById("transcriptionButton").innerHTML = `
+            <span class="transcription-symbol">${current.transcriptionButton}</span>
+            <div class="tooltip">${current.tooltip}</div>
+        `;
+            const examples = current.examples;
+            if (examples.length > 0) {
+                if (currentExampleIndex >= examples.length) {
+                    currentExampleIndex = 0;
+                }
+                const example = examples[currentExampleIndex];
+                const highlightedWord = highlightPart(example.example, example.letter);
+                document.getElementById("wordText").innerHTML = highlightedWord;
+                const soundToHighlight = current.transcriptionButton;
+                const highlightedTranscr = highlightTranscription(example.transcription, soundToHighlight);
+                document.getElementById("wordTranscr").innerHTML = highlightedTranscr;
+                document.getElementById("wordTransl").textContent = example.translation;
+                const centeredImage = document.getElementById("centeredImage");
+                centeredImage.src = example.image;
+                centeredImage.style.display = "block";
+            }
+            updateActiveNav();
+        }
+
+      function createFullNavigation() {
+    const navContainer = document.getElementById("fullNav");
+    navContainer.innerHTML = "";
+
+    const chunkSize = 22;
+    const totalSlides = Math.ceil(sounds.length / chunkSize);
+
+    for (let i = 0; i < sounds.length; i += chunkSize) {
+        const chunk = sounds.slice(i, i + chunkSize);
+        const slide = document.createElement("div");
+        slide.classList.add("slide");
+
+        // Добавляем звуки (22 штуки)
+        chunk.forEach((_, indexInChunk) => {
+            const globalIndex = i + indexInChunk;
+            const button = document.createElement("div");
+            button.className = "nav-item";
+            button.textContent = sounds[globalIndex].transcriptionButton;
+            button.onclick = () => {
+                currentIndex = globalIndex;
+                currentExampleIndex = 0;
+                updateContent();
+                updateActiveNav();
+            };
+            slide.appendChild(button);
         });
-        target.appendChild(span);
-      }
-    }
-    function handleDropToLeader(e, target) {
-      e.preventDefault();
-      if (!draggedItem) return;
-      target.innerHTML = '';
-      const name = draggedItem.getAttribute('data-name');
-      const span = document.createElement('span');
-      span.textContent = name;
-      span.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        span.remove();
-      });
-      target.appendChild(span);
-    }
 
-    // Сохранение данных в архив
-    function saveData() {
-      const date1 = document.getElementById('datePicker1').value;
-      const date2 = document.getElementById('datePicker2').value;
+        const currentSlideIndex = i / chunkSize;
 
-      if (!date1 || !date2) {
-        alert('Выберите даты для обоих графиков');
-        return;
-      }
+        // Добавляем 23-ю ячейку (пустая, но с цветом)
+        const cell23 = document.createElement("div");
+        cell23.className = "nav-item empty-cell";
+        slide.appendChild(cell23);
 
-      const archive = JSON.parse(localStorage.getItem('archive') || '{}');
+        // Добавляем 24-ю ячейку (кнопка ❮ или ❯)
+        const cell24 = document.createElement("div");
+        cell24.className = "nav-item control-btn";
 
-      // Сохранение графика 1
-      const schedule1Data = collectScheduleData('schedule1', 'leader1', 'absent1');
-      if (!archive[date1]) archive[date1] = {};
-      archive[date1].schedule1 = schedule1Data;
+        if (currentSlideIndex === 0 && totalSlides > 1) {
+            cell24.textContent = "❯"; // Только ❯ на первом слайде
+            cell24.onclick = () => {
+                currentSlide = currentSlideIndex + 1;
+                updateSlidePosition();
+                updateActiveNav();
+            };
+        } else if (currentSlideIndex === totalSlides - 1) {
+            cell24.textContent = "❮"; // Только ❮ на последнем слайде
+            cell24.onclick = () => {
+                currentSlide = currentSlideIndex - 1;
+                updateSlidePosition();
+                updateActiveNav();
+            };
+        } else {
+            cell24.textContent = ""; // Пустая кнопка (или ❮/❯ по необходимости)
+        }
 
-      // Сохранение графика 2
-      const schedule2Data = collectScheduleData('schedule2', 'leader2', 'absent2');
-      if (!archive[date2]) archive[date2] = {};
-      archive[date2].schedule2 = schedule2Data;
-
-      localStorage.setItem('archive', JSON.stringify(archive));
-      displayArchive();
-      alert('Данные сохранены в архиве');
+        slide.appendChild(cell24);
+        navContainer.appendChild(slide);
     }
 
-    function clearArchive() {
-  if (confirm("Вы уверены, что хотите очистить архив?")) {
-    localStorage.removeItem('archive');
-    displayArchive();
-    alert("Архив успешно очищен");
-  }
+    updateSlidePosition();
+    updateActiveNav();
 }
 
-    // Сбор данных графика
-    function collectScheduleData(scheduleId, leaderId, absentId) {
-      const schedule = {};
-      const slots = document.querySelectorAll(`#${scheduleId} .schedule-item`);
-      slots.forEach(slot => {
-        const time = slot.getAttribute('data-time');
-        const assignedNames = [...slot.querySelectorAll('.assigned-names span')].map(span => span.textContent);
-        if (assignedNames.length > 0) {
-          schedule[time] = assignedNames;
+
+        function updateActiveNav() {
+            const allSlides = document.querySelectorAll(".slide");
+            allSlides.forEach((slide, slideIndex) => {
+                const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
+                    el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
+                );
+
+                items.forEach((item, idx) => {
+                    const globalIndex = slideIndex * 22 + idx;
+                    item.classList.toggle("active", globalIndex === currentIndex);
+                });
+            });
         }
-      });
 
-      const leader = [...document.getElementById(leaderId).children].map(span => span.textContent);
-      const absent = [...document.getElementById(absentId).children].map(span => span.textContent);
+        function updateSlidePosition() {
+            const slidesContainer = document.querySelector(".slides-container");
+            const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
+            slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+        }
 
-      return {
-        shifts: schedule,
-        leader: leader,
-        absent: absent
-      };
-    }
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlidePosition();
+                updateActiveNav();
+            }
+        }
 
-    // Отображение архива
-    function displayArchive() {
-      const archive = JSON.parse(localStorage.getItem('archive') || '{}');
-      const archiveDiv = document.getElementById('archive');
-      archiveDiv.innerHTML = '';
+        function nextSlide() {
+            const totalSlides = Math.ceil(sounds.length / 22);
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlidePosition();
+                updateActiveNav();
+            }
+        }
 
-      if (Object.keys(archive).length === 0) {
-        archiveDiv.textContent = 'Архив пуст';
-        return;
-      }
+        function bindNavButtons() {
+            const prevBtn = document.querySelector('.carousel-controls .prev');
+            const nextBtn = document.querySelector('.carousel-controls .next');
+            if (prevBtn) prevBtn.onclick = prevSlide;
+            if (nextBtn) nextBtn.onclick = nextSlide;
+        }
 
-      Object.entries(archive).forEach(([date, data]) => {
-        const dateDiv = document.createElement('div');
-        dateDiv.style.marginBottom = '1.5rem';
-        dateDiv.innerHTML = `<strong>${date}</strong>`;
-        
-        ['schedule1', 'schedule2'].forEach(scheduleKey => {
-          const scheduleData = data[scheduleKey];
-          if (!scheduleData) return;
+        function initSwipeHandlers() {
+            const carouselWrapper = document.querySelector('.carousel-wrapper');
+            if (!carouselWrapper) return;
 
-          const scheduleDiv = document.createElement('div');
-          scheduleDiv.style.marginLeft = '1rem';
-          scheduleDiv.innerHTML = `<em>${scheduleKey === 'schedule1' ? 'График 1' : 'График 2'}</em>`;
-          
-          // Показать черговий и увал
-          const infoDiv = document.createElement('div');
-          infoDiv.style.marginLeft = '1rem';
-          infoDiv.innerHTML = `
-            Черговий: ${scheduleData.leader.join(', ') || 'Нет'}
-            <br>
-            Увал: ${scheduleData.absent.join(', ') || 'Нет'}
-          `;
-          scheduleDiv.appendChild(infoDiv);
-          
-          // Показать слоты
-          const slotsDiv = document.createElement('div');
-          slotsDiv.style.marginLeft = '1rem';
-          Object.entries(scheduleData.shifts).forEach(([time, names]) => {
-            const slotDiv = document.createElement('div');
-            slotDiv.textContent = `${time}: ${names.join(', ')}`;
-            slotsDiv.appendChild(slotDiv);
-          });
-          scheduleDiv.appendChild(slotsDiv);
-          
-          dateDiv.appendChild(scheduleDiv);
-        });
+            let touchStartX = 0;
+            let touchEndX = 0;
 
-        archiveDiv.appendChild(dateDiv);
-      });
-    }
+            carouselWrapper.addEventListener('touchstart', (event) => {
+                touchStartX = event.touches[0].clientX;
+            });
 
-    // Инициализация
-    createScheduleSlots('schedule1', 'dateRange1', 'datePicker1');
-    createScheduleSlots('schedule2', 'dateRange2', 'datePicker2');
-    createNameButtons();
-    displayArchive(); // Отображение архива при загрузке
-  </script>
+            carouselWrapper.addEventListener('touchend', (event) => {
+                touchEndX = event.changedTouches[0].clientX;
+                handleSwipe();
+            });
+
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const deltaX = touchEndX - touchStartX;
+
+                if (deltaX > swipeThreshold) {
+                    prevSlide(); // Свайп вправо
+                } else if (deltaX < -swipeThreshold) {
+                    nextSlide(); // Свайп влево
+                }
+            }
+        }
+
+        function highlightTranscription(transcr, part) {
+            if (!part || !transcr || !transcr.includes(part)) return transcr;
+            const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(escapedPart, 'gi');
+            return transcr.replace(regex, `<span class="highlighted">${part}</span>`);
+        }
+
+        function highlightPart(letter, part) {
+            if (!part || !letter.includes(part)) return letter;
+            return letter.replace(new RegExp(part, 'gi'), `<span class="highlighted">${part}</span>`);
+        }
+
+
+        function nextExample() {
+            if (currentExampleIndex < sounds[currentIndex].examples.length - 1) {
+                currentExampleIndex++;
+                updateExampleDisplay();
+            }
+        }
+
+        function prevExample() {
+            if (currentExampleIndex > 0) {
+                currentExampleIndex--;
+                updateExampleDisplay();
+            }
+        }
+
+        centeredImage.onclick = function (e) {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = rect.width;
+
+            if (x < width / 2) {
+                prevExample(); // Левая половина — назад
+            } else {
+                nextExample(); // Правая половина — вперед
+            }
+        };
+
+        function updateExampleDisplay() {
+            const sound = sounds[currentIndex];
+            const example = sound.examples[currentExampleIndex];
+            const highlightedWord = highlightPart(example.example, example.letter);
+            document.getElementById("wordText").innerHTML = highlightedWord;
+            const soundToHighlight = sound.transcriptionButton;
+            const highlightedTranscr = highlightTranscription(example.transcription, soundToHighlight);
+            document.getElementById("wordTranscr").innerHTML = highlightedTranscr;
+            document.getElementById("wordTransl").textContent = example.translation;
+            const centeredImage = document.getElementById("centeredImage");
+            centeredImage.src = example.image;
+        }
+
+        function playSound(file) {
+            const audio = document.getElementById("audioPlayer");
+            audio.src = file;
+            audio.play().catch(error => console.error("Ошибка воспроизведения:", error));
+        }
+
+        function speakCurrentWord() {
+            const utterance = new SpeechSynthesisUtterance(sounds[currentIndex].examples[currentExampleIndex].example);
+            utterance.lang = "en-US";
+            speechSynthesis.speak(utterance);
+        }
+        window.onload = () => {
+            updateContent();
+            createFullNavigation();
+        };
+    </script>
 </body>
+
 </html>
