@@ -1260,12 +1260,12 @@
             speechSynthesis.speak(utterance);
         }
 
-        window.onload = () => {
-            updateContent();
-            createFullNavigation();
-            bindNavButtons();
-            initSwipeHandlers();
-        };
+       window.onload = () => {
+    updateContent();
+    createFullNavigation();
+    bindNavButtons();
+    initSwipeHandlers(); // <-- ВАЖНО! Здесь мы её вызываем
+};
     </script>
 </body>
 </html>
