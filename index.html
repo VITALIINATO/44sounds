@@ -1176,43 +1176,51 @@
             updateActiveNav();
         }
 
-       function updateActiveNav() {
-    const allSlides = document.querySelectorAll(".slide");
-    allSlides.forEach((slide, slideIndex) => {
-        // Проверяем, виден ли текущий слайд
-        const slideRect = slide.getBoundingClientRect();
-        const containerRect = document.querySelector('.carousel-wrapper').getBoundingClientRect();
-        const isSlideVisible = slideRect.left >= containerRect.left && slideRect.right <= containerRect.right;
-        
-        if (isSlideVisible) {
-            const items = Array.from(slide.querySelectorAll(".nav-item")).filter(
-                el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
-            );
-            items.forEach((item, idx) => {
-                const globalIndex = slideIndex * 22 + idx;
-                item.classList.toggle("active", globalIndex === currentIndex);
-            });
-        }
-    });
-}
-
-function updateSlidePosition() {
+      
+        function updateSlidePosition() {
     const slidesContainer = document.querySelector(".slides-container");
     const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
     slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+    
+    // Сбрасываем все активные элементы перед обновлением
+    resetAllActiveItems();
+    
+    // Обновляем активный элемент после завершения анимации
+    setTimeout(() => {
+        updateActiveNav();
+    }, 500); // Соответствует длительности анимации (0.5s)
+}
 
-    // Убираем active-класс у всех элементов навигации
+function resetAllActiveItems() {
     const allNavItems = document.querySelectorAll('.nav-item');
     allNavItems.forEach(item => {
         item.classList.remove('active');
     });
-    
-    // Обновляем активный элемент после анимации перехода
-    setTimeout(() => {
-        updateActiveNav();
-    }, 500); // Задержка должна соответствовать длительности анимации (0.5s в CSS)
 }
-        // Эта функция уже существует, оставляем как есть
+
+function updateActiveNav() {
+    // Находим текущий видимый слайд
+    const slides = document.querySelectorAll('.slide');
+    const visibleSlide = Array.from(slides).find(slide => {
+        const rect = slide.getBoundingClientRect();
+        return rect.left >= 0 && rect.right <= window.innerWidth;
+    });
+    
+    if (!visibleSlide) return;
+    
+    // Обновляем активный элемент только в видимом слайде
+    const items = Array.from(visibleSlide.querySelectorAll(".nav-item")).filter(
+        el => !el.classList.contains("control-btn") && !el.classList.contains("empty-cell")
+    );
+    
+    items.forEach((item, idx) => {
+        const slideIndex = Array.from(slides).indexOf(visibleSlide);
+        const globalIndex = slideIndex * 22 + idx;
+        item.classList.toggle("active", globalIndex === currentIndex);
+    });
+}
+
+
         function removeControlButtonActive() {
             const allSlides = document.querySelectorAll(".slide");
             allSlides.forEach(slide => {
