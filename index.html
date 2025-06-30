@@ -1231,23 +1231,40 @@ function updateActiveNav() {
             });
         }
 
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlidePosition();
-                updateActiveNav();
-            }
-        }
+        // function prevSlide() {
+        //     if (currentSlide > 0) {
+        //         currentSlide--;
+        //         updateSlidePosition();
+        //         updateActiveNav();
+        //     }
+        // }
 
-        function nextSlide() {
-            const totalSlides = Math.ceil(sounds.length / 22);
-            if (currentSlide < totalSlides - 1) {
-                currentSlide++;
-                removeControlButtonActive(); // <-- добавили перед сменой слайда
-                updateSlidePosition();
-                updateActiveNav();
-            }
-        }
+        // function nextSlide() {
+        //     const totalSlides = Math.ceil(sounds.length / 22);
+        //     if (currentSlide < totalSlides - 1) {
+        //         currentSlide++;
+        //         removeControlButtonActive(); // <-- добавили перед сменой слайда
+        //         updateSlidePosition();
+        //         updateActiveNav();
+        //     }
+        // }
+
+        function prevSlide() {
+    if (currentSlide > 0) {
+        resetAllActiveItems(); // Сбрасываем перед переходом
+        currentSlide--;
+        updateSlidePosition();
+    }
+}
+
+function nextSlide() {
+    const totalSlides = Math.ceil(sounds.length / 22);
+    if (currentSlide < totalSlides - 1) {
+        resetAllActiveItems(); // Сбрасываем перед переходом
+        currentSlide++;
+        updateSlidePosition();
+    }
+}
 
         function bindNavButtons() {
             const prevBtn = document.querySelector('.carousel-controls .prev');
@@ -1375,12 +1392,21 @@ function updateActiveNav() {
             speechSynthesis.speak(utterance);
         }
 
+        // window.onload = () => {
+        //     updateContent();
+        //     createFullNavigation();
+        //     bindNavButtons();
+        //     initSwipeHandlers(); // <-- Убедиться, что эта строка есть
+        // };
+
         window.onload = () => {
-            updateContent();
-            createFullNavigation();
-            bindNavButtons();
-            initSwipeHandlers(); // <-- Убедиться, что эта строка есть
-        };
+    updateContent();
+    createFullNavigation();
+    bindNavButtons();
+    initSwipeHandlers();
+    updateActiveNav(); // Первоначальное обновление активного элемента
+};
+
     </script>
 </body>
 
