@@ -349,6 +349,11 @@
             visibility: visible;
             opacity: 1;
         }
+
+        .control-btn:focus,
+.control-btn:active {
+    outline: none;
+}
     </style>
 </head>
 
@@ -1082,6 +1087,10 @@
         let currentExampleIndex = 0;
         let currentSlide = 0;
 
+        let touchStartX = 0;
+let touchEndX = 0;
+
+
         function updateContent() {
             const current = sounds[currentIndex];
             document.getElementById("transcriptionButton").innerHTML = `
@@ -1107,7 +1116,7 @@
             updateActiveNav();
         }
 
-        function createFullNavigation() {
+       function createFullNavigation() {
             const navContainer = document.getElementById("fullNav");
             navContainer.innerHTML = "";
             const chunkSize = 22;
@@ -1175,11 +1184,26 @@
             });
         }
 
-        function updateSlidePosition() {
-            const slidesContainer = document.querySelector(".slides-container");
-            const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
-            slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-        }
+        
+
+      function updateSlidePosition() {
+    const slidesContainer = document.querySelector(".slides-container");
+    const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
+    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+
+    // Убираем active-класс у кнопок ← и →
+    removeControlButtonActive();
+}
+
+function removeControlButtonActive() {
+    const allSlides = document.querySelectorAll(".slide");
+    allSlides.forEach(slide => {
+        const controlButtons = slide.querySelectorAll(".control-btn");
+        controlButtons.forEach(btn => {
+            btn.classList.remove("active"); // Убираем активный класс
+        });
+    });
+}
 
         function prevSlide() {
             if (currentSlide > 0) {
@@ -1205,7 +1229,7 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-        function initSwipeHandlers() {
+       function initSwipeHandlers() {
             let touchStartY = 0;
             let isSwipingDown = false;
 
@@ -1236,6 +1260,7 @@
                 }
             });
         }
+
 
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
