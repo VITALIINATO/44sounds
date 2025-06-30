@@ -1161,50 +1161,35 @@
             if (prevBtn) prevBtn.onclick = prevSlide;
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
-function initSwipeHandlers() {
-    const carouselWrapper = document.querySelector('.carousel-wrapper');
-    if (!carouselWrapper) return;
 
-    let touchStartX = 0;
+ function initSwipeHandlers() {
     let touchStartY = 0;
-    let isVerticalSwipe = false;
+    let isSwipingDown = false;
 
-    carouselWrapper.addEventListener('touchstart', (event) => {
-        touchStartX = event.touches[0].clientX;
+    document.addEventListener('touchstart', (event) => {
+        // Берём первый доступный touch
         touchStartY = event.touches[0].clientY;
-        isVerticalSwipe = false;
+        isSwipingDown = true;
     });
 
-    carouselWrapper.addEventListener('touchmove', (event) => {
-        const deltaY = Math.abs(event.touches[0].clientY - touchStartY);
-        const deltaX = Math.abs(event.touches[0].clientX - touchStartX);
+    document.addEventListener('touchmove', (event) => {
+        const deltaY = event.touches[0].clientY - touchStartY;
 
-        // Если вертикальное движение больше горизонтального, считаем как вертикальный свайп
-        if (deltaY > deltaX && deltaY > 30) {
-            isVerticalSwipe = true;
+        // Если движение больше чем на 30px вниз — это потенциальный свайп для перезагрузки
+        if (deltaY > 30) {
+            isSwipingDown = true;
+        } else {
+            isSwipingDown = false;
         }
     });
 
-    carouselWrapper.addEventListener('touchend', (event) => {
+    document.addEventListener('touchend', (event) => {
         const touchEndY = event.changedTouches[0].clientY;
         const deltaY = touchEndY - touchStartY;
 
-        // Вертикальный свайп вниз
-        if (isVerticalSwipe && deltaY > 100) {
-            window.location.reload(); // Перезагружаем страницу
-        }
-
-        // Горизонтальный свайп для навигации
-        else if (!isVerticalSwipe) {
-            const touchEndX = event.changedTouches[0].clientX;
-            const deltaX = touchEndX - touchStartX;
-            const swipeThreshold = 50;
-
-            if (deltaX > swipeThreshold) {
-                prevSlide(); // Свайп вправо
-            } else if (deltaX < -swipeThreshold) {
-                nextSlide(); // Свайп влево
-            }
+        // Если свайп вниз длиннее 100px — перезагружаем страницу
+        if (isSwipingDown && deltaY > 100) {
+            window.location.reload();
         }
     });
 }
