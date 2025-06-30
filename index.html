@@ -1256,7 +1256,21 @@ function removeControlButtonActive() {
                 }
             });
 
-             carouselWrapper.addEventListener('touchend', (event) => {
+             
+            carouselWrapper.addEventListener('touchstart', (event) => {
+                touchStartX = event.touches[0].clientX;
+                touchStartY = event.touches[0].clientY;
+                isSwipingDown = false;
+            });
+            
+            carouselWrapper.addEventListener('touchmove', (event) => {
+                const deltaY = event.touches[0].clientY - touchStartY;
+                if (deltaY > 30) { // Если свайп вниз более чем на 30px
+                    isSwipingDown = true;
+                }
+            });
+            
+            carouselWrapper.addEventListener('touchend', (event) => {
                 touchEndX = event.changedTouches[0].clientX;
                 const deltaX = touchEndX - touchStartX;
                 
@@ -1269,7 +1283,7 @@ function removeControlButtonActive() {
                         nextSlide(); // Свайп влево
                     }
                 }
-             
+              
             });
         }
 
