@@ -1227,47 +1227,7 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-      function initSwipeHandlers() {
-    const carouselWrapper = document.querySelector('.carousel-wrapper');
-    if (!carouselWrapper) return;
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-
-    carouselWrapper.addEventListener('touchstart', (event) => {
-        const touch = event.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-    });
-
-    carouselWrapper.addEventListener('touchmove', (event) => {
-        const touch = event.touches[0];
-        touchEndX = touch.clientX;
-        touchEndY = touch.clientY;
-    });
-
-    carouselWrapper.addEventListener('touchend', () => {
-        const deltaX = Math.abs(touchEndX - touchStartX);
-        const deltaY = Math.abs(touchEndY - touchStartY);
-
-        // Горизонтальный свайп
-        if (deltaX > deltaY && deltaX > 30) {
-            if (touchEndX < touchStartX) {
-                nextSlide(); // Свайп влево — следующий слайд
-            } else {
-                prevSlide(); // Свайп вправо — предыдущий слайд
-            }
-        }
-
-        // Вертикальный свайп вниз — перезагрузка
-        if (deltaY > 100 && touchEndY - touchStartY > 0) {
-            window.location.reload();
-        }
-    });
-}
-
+    initSwipeHandlers()
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
             const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
