@@ -351,9 +351,9 @@
         }
 
         .control-btn:focus,
-.control-btn:active {
-    outline: none;
-}
+        .control-btn:active {
+            outline: none;
+        }
     </style>
 </head>
 
@@ -1087,7 +1087,7 @@
         let currentExampleIndex = 0;
         let currentSlide = 0;
 
-     
+
 
         function updateContent() {
             const current = sounds[currentIndex];
@@ -1114,7 +1114,7 @@
             updateActiveNav();
         }
 
-       function createFullNavigation() {
+        function createFullNavigation() {
             const navContainer = document.getElementById("fullNav");
             navContainer.innerHTML = "";
             const chunkSize = 22;
@@ -1182,25 +1182,25 @@
             });
         }
 
-        
-function updateSlidePosition() {
-    const slidesContainer = document.querySelector(".slides-container");
-    const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
-    slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
-    
-    // Убираем active-класс у кнопок ← и →
-    removeControlButtonActive();
-}
-// Эта функция уже существует, оставляем как есть
-function removeControlButtonActive() {
-    const allSlides = document.querySelectorAll(".slide");
-    allSlides.forEach(slide => {
-        const controlButtons = slide.querySelectorAll(".control-btn");
-        controlButtons.forEach(btn => {
-            btn.classList.remove("active"); // Убираем активный класс
-        });
-    });
-}
+
+        function updateSlidePosition() {
+            const slidesContainer = document.querySelector(".slides-container");
+            const slideWidth = document.querySelector('.carousel-wrapper').offsetWidth;
+            slidesContainer.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+
+            // Убираем active-класс у кнопок ← и →
+            removeControlButtonActive();
+        }
+        // Эта функция уже существует, оставляем как есть
+        function removeControlButtonActive() {
+            const allSlides = document.querySelectorAll(".slide");
+            allSlides.forEach(slide => {
+                const controlButtons = slide.querySelectorAll(".control-btn");
+                controlButtons.forEach(btn => {
+                    btn.classList.remove("active"); // Убираем активный класс
+                });
+            });
+        }
 
         function prevSlide() {
             if (currentSlide > 0) {
@@ -1214,6 +1214,7 @@ function removeControlButtonActive() {
             const totalSlides = Math.ceil(sounds.length / 22);
             if (currentSlide < totalSlides - 1) {
                 currentSlide++;
+                removeControlButtonActive(); // <-- добавили перед сменой слайда
                 updateSlidePosition();
                 updateActiveNav();
             }
@@ -1226,43 +1227,43 @@ function removeControlButtonActive() {
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-    function initSwipeHandlers() {
-    let touchStartY = 0;
-    let touchStartX = 0;
-    let touchEndY = 0;
-    let touchEndX = 0;
+        function initSwipeHandlers() {
+            let touchStartY = 0;
+            let touchStartX = 0;
+            let touchEndY = 0;
+            let touchEndX = 0;
 
-    document.addEventListener('touchstart', (event) => {
-        const touch = event.touches[0];
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-    });
+            document.addEventListener('touchstart', (event) => {
+                const touch = event.touches[0];
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+            });
 
-    document.addEventListener('touchmove', (event) => {
-        const touch = event.touches[0];
-        touchEndX = touch.clientX;
-        touchEndY = touch.clientY;
-    });
+            document.addEventListener('touchmove', (event) => {
+                const touch = event.touches[0];
+                touchEndX = touch.clientX;
+                touchEndY = touch.clientY;
+            });
 
-    document.addEventListener('touchend', () => {
-        const deltaX = Math.abs(touchEndX - touchStartX);
-        const deltaY = Math.abs(touchEndY - touchStartY);
+            document.addEventListener('touchend', () => {
+                const deltaX = Math.abs(touchEndX - touchStartX);
+                const deltaY = Math.abs(touchEndY - touchStartY);
 
-        // Горизонтальный свайп
-        if (deltaX > deltaY && deltaX > 30) {
-            if (touchEndX < touchStartX) {
-                nextSlide(); // Свайп влево — следующий слайд
-            } else {
-                prevSlide(); // Свайп вправо — предыдущий слайд
-            }
+                // Горизонтальный свайп
+                if (deltaX > deltaY && deltaX > 30) {
+                    if (touchEndX < touchStartX) {
+                        nextSlide(); // Свайп влево — следующий слайд
+                    } else {
+                        prevSlide(); // Свайп вправо — предыдущий слайд
+                    }
+                }
+
+                // Вертикальный свайп вниз — перезагрузка
+                if (deltaY > 100 && touchEndY - touchStartY > 0) {
+                    window.location.reload();
+                }
+            });
         }
-
-        // Вертикальный свайп вниз — перезагрузка
-        if (deltaY > 100 && touchEndY - touchStartY > 0) {
-            window.location.reload();
-        }
-    });
-}
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
             const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -1329,12 +1330,12 @@ function removeControlButtonActive() {
             speechSynthesis.speak(utterance);
         }
 
-       window.onload = () => {
-    updateContent();
-    createFullNavigation();
-    bindNavButtons();
-    initSwipeHandlers(); // <-- Убедиться, что эта строка есть
-};
+        window.onload = () => {
+            updateContent();
+            createFullNavigation();
+            bindNavButtons();
+            initSwipeHandlers(); // <-- Убедиться, что эта строка есть
+        };
     </script>
 </body>
 
