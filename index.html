@@ -1227,43 +1227,47 @@
             if (nextBtn) nextBtn.onclick = nextSlide;
         }
 
-        function initSwipeHandlers() {
-            let touchStartY = 0;
-            let touchStartX = 0;
-            let touchEndY = 0;
-            let touchEndX = 0;
+      function initSwipeHandlers() {
+    const carouselWrapper = document.querySelector('.carousel-wrapper');
+    if (!carouselWrapper) return;
 
-            document.addEventListener('touchstart', (event) => {
-                const touch = event.touches[0];
-                touchStartX = touch.clientX;
-                touchStartY = touch.clientY;
-            });
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
 
-            document.addEventListener('touchmove', (event) => {
-                const touch = event.touches[0];
-                touchEndX = touch.clientX;
-                touchEndY = touch.clientY;
-            });
+    carouselWrapper.addEventListener('touchstart', (event) => {
+        const touch = event.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+    });
 
-            document.addEventListener('touchend', () => {
-                const deltaX = Math.abs(touchEndX - touchStartX);
-                const deltaY = Math.abs(touchEndY - touchStartY);
+    carouselWrapper.addEventListener('touchmove', (event) => {
+        const touch = event.touches[0];
+        touchEndX = touch.clientX;
+        touchEndY = touch.clientY;
+    });
 
-                // Горизонтальный свайп
-                if (deltaX > deltaY && deltaX > 30) {
-                    if (touchEndX < touchStartX) {
-                        nextSlide(); // Свайп влево — следующий слайд
-                    } else {
-                        prevSlide(); // Свайп вправо — предыдущий слайд
-                    }
-                }
+    carouselWrapper.addEventListener('touchend', () => {
+        const deltaX = Math.abs(touchEndX - touchStartX);
+        const deltaY = Math.abs(touchEndY - touchStartY);
 
-                // Вертикальный свайп вниз — перезагрузка
-                if (deltaY > 100 && touchEndY - touchStartY > 0) {
-                    window.location.reload();
-                }
-            });
+        // Горизонтальный свайп
+        if (deltaX > deltaY && deltaX > 30) {
+            if (touchEndX < touchStartX) {
+                nextSlide(); // Свайп влево — следующий слайд
+            } else {
+                prevSlide(); // Свайп вправо — предыдущий слайд
+            }
         }
+
+        // Вертикальный свайп вниз — перезагрузка
+        if (deltaY > 100 && touchEndY - touchStartY > 0) {
+            window.location.reload();
+        }
+    });
+}
+
         function highlightTranscription(transcr, part) {
             if (!part || !transcr || !transcr.includes(part)) return transcr;
             const escapedPart = part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
